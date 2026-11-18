@@ -1472,6 +1472,10 @@ body.po .mood{display:flex!important}
 .mbtag{max-width:none!important;overflow:visible!important}
 .mbfs .mbtag2{bottom:auto;top:46%;left:-18%;right:auto}
 .mbp figcaption{white-space:normal;line-height:.95;bottom:calc(var(--pp)*.35)}
+
+/* Instagram post shapes */
+.mbp .mbf,.mbfs .mbf{height:calc(var(--w)*5/4)!important}
+.mbp.mbl .mbf,.mbtn .mbf{height:var(--w)!important}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#about">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#play">Playground</a><a href="#contact">Contact</a></nav>
@@ -2073,15 +2077,15 @@ function build(){
    if(n[0]==='st')s='<div class="mbi" style="--y:'+y+'px"><div class="mbr" style="--r:'+(R()*24-12).toFixed(1)+'deg"><div class="mbst"><span><b>'+n[2]+'</b>'+n[3]+'</span></div></div></div>';
    else{w=Math.round(h*(n[0]==='tk'?.34:.4));s='<div class="mbi" style="--y:'+y+'px"><div class="mbr" style="--r:'+r+'deg"><div class="mbn '+n[0]+'" style="--w:'+w+'px"><small>'+n[1]+'</small>'+n[2]+(n[3]?'<b>'+n[3]+'</b>':'')+'</div>'+(n[0]==='tk'?'':tape())+'</div></div>'}
    html+=s;continue}
-  if(t==='big'){w=Math.round(h*.4);y=Math.round((R()-.5)*h*.06);var pi=P.shift();
+  if(t==='big'){w=Math.round(h*.5);y=Math.round((R()-.5)*h*.06);var pi=P.shift();
    s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0">'+img(pi)+'<figcaption>'+CAP[pi-1]+'</figcaption>'+tape(R()<.35?' b':'')+'</figure></div>'}
-  else if(t==='pin'){w=Math.round(h*.29);y=Math.round((R()<.5?-1:.7)*h*(.1+R()*.06));
+  else if(t==='pin'){w=Math.round(h*.36);y=Math.round((R()<.5?-1:.7)*h*(.1+R()*.06));
    s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+Math.round(pp*.8)+'px;margin:0">'+img(pi=P.shift())+'<span class="mbpin"></span>'+tag(pi)+'</figure></div>'}
-  else if(t==='film'){w=Math.round(h*.215);y=Math.round((R()-.5)*h*.04);var ia=P.shift(),ib=P.length?P.shift():0,a=img(ia),b=ib?img(ib):'';
+  else if(t==='film'){w=Math.round(h*.3);y=Math.round((R()-.5)*h*.04);var ia=P.shift(),ib=P.length?P.shift():0,a=img(ia),b=ib?img(ib):'';
    s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbfs" style="--r:'+(r*.5).toFixed(2)+'deg;--w:'+w+'px">'+a+b+(ib?tag(ib)+tag(ia).replace('class="mbtag"','class="mbtag mbtag2"'):tag(ia))+'</div></div>'}
-  else if(t==='wide'){w=Math.round(h*(mob?.78:.86));y=Math.round((R()<.5?-1:1)*h*(.06+R()*.08));var li=L.shift();
+  else if(t==='wide'){w=Math.round(h*(mob?.5:.54));y=Math.round((R()<.5?-1:1)*h*(.06+R()*.08));var li=L.shift();
    s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp mbl" style="--r:'+(r*.6).toFixed(2)+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0">'+img(li)+'<figcaption>'+CAP[li-1]+'</figcaption>'+'<span class="mbpin" style="left:14%"></span><span class="mbpin" style="left:86%"></span></figure></div>'}
-  else{w=Math.round(h*(mob?.66:.72));y=Math.round((R()<.5?-1:1)*h*(.14+R()*.08));
+  else{w=Math.round(h*(mob?.42:.46));y=Math.round((R()<.5?-1:1)*h*(.14+R()*.08));
    s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbtn" style="--r:'+r+'deg;--w:'+w+'px">'+img(li=L.shift())+'<span class="mbtape c"></span>'+tag(li)+'</div></div>'}
   if(R()<.45)s=s.replace('class="mbi" style="','class="mbi" style="margin-left:-'+Math.round(h*(.05+R()*.07))+'px;z-index:'+(2+Math.floor(R()*3))+';');
   if(R()<.32)s+='<div class="mbi mbsp" style="--y:'+Math.round((R()-.5)*h*.7)+'px;--r:'+(R()*30-15).toFixed(0)+'deg" aria-hidden="true">'+pick(EM)+'</div>';
