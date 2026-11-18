@@ -1476,6 +1476,15 @@ body.po .mood{display:flex!important}
 /* Instagram post shapes */
 .mbp .mbf,.mbfs .mbf{height:calc(var(--w)*5/4)!important}
 .mbp.mbl .mbf,.mbtn .mbf{height:var(--w)!important}
+
+.mbduo{display:flex;align-items:flex-start}
+.mbduo .mbr{flex:none}
+.mbduo .mbr:hover{transform:rotate(0) scale(1.05);z-index:3}
+.mbi:hover .mbduo .mbr:not(:hover){transform:rotate(var(--r,0deg))}
+.mbch{width:136px!important;height:136px!important;background:radial-gradient(circle,rgba(15,26,53,.92) 0 62%,transparent 63%)}
+.mbch i{display:block;font-style:normal;font-size:26px;line-height:1;margin-bottom:4px}
+.mbch b{font-size:25px!important;margin-bottom:3px}
+@media(max-width:700px){.mbch{width:112px!important;height:112px!important}.mbch b{font-size:21px!important}}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#about">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#play">Playground</a><a href="#contact">Contact</a></nav>
@@ -2056,40 +2065,38 @@ var flown=false,wait=0;setInterval(function(){if(flown)return;if(ready()){wait+=
 <script>(function(){var c=document.getElementById('dys'),l=document.getElementById('lg');if(!c||!l)return;function pos(){var r=l.getBoundingClientRect();if(!r.width)return;c.style.setProperty('left',(r.left+r.width/2)+'px','important');c.style.setProperty('top',(r.bottom+3)+'px','important')}pos();addEventListener('resize',pos);setTimeout(pos,300);setTimeout(pos,1500);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(pos)})();</script>
 <script>(function(){
 var N=90,BASE='ph/p',root=document.getElementById('mbx');if(!root)return;
-var built=false,track,setW=0,x=0,v=0,auto=-0.075,drag=null,hover=false,vis=false,last=0,raf=0;
+var built=false,track,setW=0,x=0,v=0,auto=-0.055,drag=null,hover=false,vis=false,last=0,raf=0;
 function rnd(s){return function(){s=(s*16807)%2147483647;return (s-1)/2147483646}}
 var CAP=["green hills ⛰️", "Anuskura, Konkan 🚙", "sun peeking through ☁️", "Birla Ganpati 🙏", "ISKCON NVCC, Pune 🛕", "ice-cream break 🍨", "tower in the fog 🌫️", "white & breezy ☀️", "Happy Independence Day 🇮🇳", "lunch with a view 🍽️", "plane spotting ✈️", "parasailing! 🪂", "boat club evenings 🚣", "art corner 🎨", "starry night ✨", "temple lights 🪔", "evening vibes 🌇", "temple spires 🛕", "Andharban trail 🥾", "monsoon greens 🌿", "Dagdusheth Ganpati 🙏", "lone tree 🌳", "Marari Beach, Alleppey 🌊", "night out 🌙", "Kundmala 🌉", "city from above 🏙️", "sunset drive, Hinjawadi 🌅", "shake it up 🥤", "on top of Konkan 🏞️", "Phoenix Millennium ✨", "head in the clouds ☁️", "cave window 🌄", "edge of the world 🧗", "ISKCON ceiling art 🦚", "sky drama ⛅", "Alappuzha, Kerala 🛶", "city & clouds 🌥️", "noodle mood 🍜", "Hinjawadi blues 💙", "lost in the fog 🌫️", "Balewadi Stadium 🏟️", "Pawna Lake 🏕️", "Bird Valley, Hinjawadi 🐦", "look up 🌴", "misty peak ⛰️", "jungle roof 🌿", "dusk glow 🌆", "temple day 🛕", "flying over the sea 🪂", "riverside calm 🌉", "window seat 🪟", "bridge to the woods 🌳", "green ridge ⛰️", "cotton candy sky 🌸", "Kasba Peth Ganpati 🙏", "Thekkady, Kerala 🐘", "cliff views 🏞️", "Dagdusheth darshan 🪔", "Pune festivities 🎉", "Mandvi Beach 🌊", "feet up, view on 👟", "Kerala backwaters 🛶", "stars at Devgad ✨", "golden hour 🌇", "carved in wood 🪵", "sea foam 🌊", "blessings 🙏", "houseboat days 🛶", "breakfast with a view 🍉", "can I stop time? ⏳", "sky-high 🏢", "road trip 🚗", "city glow 🌃", "fading light 🌙", "street-lamp moon 💡", "iron lace gate ✨", "Kundmala falls 💦", "Munnar, Kerala 🍃", "Tambaldeg beach 👣", "Shinde Chhatri 🏛️", "foggy morning 🌫️", "iced coffee ☕", "boat ride 🚤", "lantern light 🏮", "Mumbai meri jaan 🌇", "blue hour 💙", "hazy sunset 🌅", "monsoon hills ⛰️", "Kasarsai Dam 🌅", "city lights, Pune 🌃"];var R=rnd(20261118);function pick(a){return a[Math.floor(R()*a.length)]}
 var notes=[["note","field notes","chasing light,<br>one frame at a time"],["pc","postcard","wish you were<br>here, honestly."],["tk","admit one","golden hour","ON THE ROAD"],["note","to-do","ride. click.<br>repeat."],["pc","postcard","mountains &gt;<br>everything"],["st","","Rohit","· on the road ·"],["note","reminder","slow mornings,<br>long roads"],["tk","boarding pass","sunset seat","WINDOW · 26A"],["note","monsoon log","green on<br>green on green"],["st","","2026","· travel diary ·"],["pc","postcard","sea breeze<br>&amp; salt hair"],["note","note to self","look up.<br>always."]];
 function H(){return root.clientHeight}
 function img(i){return '<div class="mbf"><img src="'+BASE+String(i).padStart(2,'0')+'.webp" alt="'+CAP[i-1].replace(/[^\w ,&!?.\-']/g,'').trim()+', photo by Rohit Parjane" loading="lazy" decoding="async" draggable="false"></div>'}
-function build(){
- var h=H(),mob=window.innerWidth<=700,html='',k=0,ni=0,pp=Math.round(h*.022),LS=[1,2,9,13,18,25,26,27,29,32,37,48,50,57,62,76,78,80,81,85,86,90],P=[],L=[];
- for(var q=1;q<=N;q++)(LS.indexOf(q)>-1?L:P).push(q);
- var caps=['wanderlust','home is the road','sky diaries','off the map','temple bells','after the rain','city lights','tiny escapes','summit feels','window seat','chasing clouds','good days'];
- var pat=['big','wide','film','pin','note','torn','big','pin','film','wide','big','torn','note','pin'];
+var EM=['📸','🌴','⛰️','☕','🌊','🧭','✈️','🌅','🎒','🛕','🌧️','🏍️','🍃','⭐'];function build(){
+ var h=H(),mob=window.innerWidth<=700,html='',ni=0,pp=Math.round(h*.022),LS=[1,2,9,13,18,25,26,27,29,32,37,48,50,57,62,76,78,80,81,85,86,90],G=[["the hills", "⛰️", [1, 2, 19, 20, 29, 32, 33, 40, 45, 53, 57, 61, 88, 72, 22, 44, 46, 52]], ["kerala & coast", "🌴", [8, 23, 36, 56, 62, 68, 78, 12, 49, 60, 66, 79, 85]], ["by the water", "🌊", [13, 25, 50, 77, 83, 42]], ["temple trails", "🛕", [4, 5, 16, 18, 21, 34, 48, 55, 58, 59, 67, 80, 65]], ["sky diaries", "☁️", [3, 11, 31, 35, 70, 86, 47, 54, 64, 74, 87, 89, 27]], ["city life", "🏙️", [7, 9, 17, 26, 30, 37, 39, 41, 71, 81, 14, 51, 76]], ["after dark", "🌙", [15, 24, 43, 63, 73, 75, 84, 90]], ["café stops", "☕", [6, 10, 28, 38, 69, 82]]];
  root.style.setProperty('--gap',(mob?18:30)+'px');
- var pi,li,EM=['📸','🌴','⛰️','☕','🌊','🧭','✈️','🌅','🎒','🛕','🌧️','🏍️','🍃','⭐'];function tag(i){return '<span class="mbtag" style="--tr:'+(R()*8-4).toFixed(1)+'deg">'+CAP[i-1]+'</span>'}
+ function tag(i){return '<span class="mbtag" style="--tr:'+(R()*8-4).toFixed(1)+'deg">'+CAP[i-1]+'</span>'}
  function tape(c){return '<span class="mbtape'+(c||'')+'" style="--tr:'+(R()*8-4).toFixed(1)+'deg"></span>'}
- while(P.length||L.length){var t=pat[k++%pat.length],r=(R()*7-3.5).toFixed(2),y,w,s='';
-  if((t==='wide'||t==='torn')&&!L.length)t='big';
-  if((t==='big'||t==='pin'||t==='film')&&!P.length)t=R()<.5?'wide':'torn';
-  if(t==='note'){var n=notes[ni++%notes.length];y=Math.round((R()-.5)*h*.42);
-   if(n[0]==='st')s='<div class="mbi" style="--y:'+y+'px"><div class="mbr" style="--r:'+(R()*24-12).toFixed(1)+'deg"><div class="mbst"><span><b>'+n[2]+'</b>'+n[3]+'</span></div></div></div>';
-   else{w=Math.round(h*(n[0]==='tk'?.34:.4));s='<div class="mbi" style="--y:'+y+'px"><div class="mbr" style="--r:'+r+'deg"><div class="mbn '+n[0]+'" style="--w:'+w+'px"><small>'+n[1]+'</small>'+n[2]+(n[3]?'<b>'+n[3]+'</b>':'')+'</div>'+(n[0]==='tk'?'':tape())+'</div></div>'}
-   html+=s;continue}
-  if(t==='big'){w=Math.round(h*.5);y=Math.round((R()-.5)*h*.06);var pi=P.shift();
-   s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0">'+img(pi)+'<figcaption>'+CAP[pi-1]+'</figcaption>'+tape(R()<.35?' b':'')+'</figure></div>'}
-  else if(t==='pin'){w=Math.round(h*.36);y=Math.round((R()<.5?-1:.7)*h*(.1+R()*.06));
-   s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+Math.round(pp*.8)+'px;margin:0">'+img(pi=P.shift())+'<span class="mbpin"></span>'+tag(pi)+'</figure></div>'}
-  else if(t==='film'){w=Math.round(h*.3);y=Math.round((R()-.5)*h*.04);var ia=P.shift(),ib=P.length?P.shift():0,a=img(ia),b=ib?img(ib):'';
-   s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbfs" style="--r:'+(r*.5).toFixed(2)+'deg;--w:'+w+'px">'+a+b+(ib?tag(ib)+tag(ia).replace('class="mbtag"','class="mbtag mbtag2"'):tag(ia))+'</div></div>'}
-  else if(t==='wide'){w=Math.round(h*(mob?.5:.54));y=Math.round((R()<.5?-1:1)*h*(.06+R()*.08));var li=L.shift();
-   s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp mbl" style="--r:'+(r*.6).toFixed(2)+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0">'+img(li)+'<figcaption>'+CAP[li-1]+'</figcaption>'+'<span class="mbpin" style="left:14%"></span><span class="mbpin" style="left:86%"></span></figure></div>'}
-  else{w=Math.round(h*(mob?.42:.46));y=Math.round((R()<.5?-1:1)*h*(.14+R()*.08));
-   s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbtn" style="--r:'+r+'deg;--w:'+w+'px">'+img(li=L.shift())+'<span class="mbtape c"></span>'+tag(li)+'</div></div>'}
-  if(R()<.45)s=s.replace('class="mbi" style="','class="mbi" style="margin-left:-'+Math.round(h*(.05+R()*.07))+'px;z-index:'+(2+Math.floor(R()*3))+';');
-  if(R()<.32)s+='<div class="mbi mbsp" style="--y:'+Math.round((R()-.5)*h*.7)+'px;--r:'+(R()*30-15).toFixed(0)+'deg" aria-hidden="true">'+pick(EM)+'</div>';
-  html+=s}
+ function pol(i,w,r,extra,st,cl){return '<figure class="mbr mbp'+(cl||'')+'" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0;'+(st||'')+'">'+img(i)+'<figcaption>'+CAP[i-1]+'</figcaption>'+extra+'</figure>'}
+ function note(){var n=notes[ni++%notes.length];if(n[0]==='st')n=notes[ni++%notes.length];var y=Math.round((R()-.5)*h*.4),r=(R()*7-3.5).toFixed(2),w=Math.round(h*(n[0]==='tk'?.34:.4));
+  return '<div class="mbi" style="--y:'+y+'px"><div class="mbr" style="--r:'+r+'deg"><div class="mbn '+n[0]+'" style="--w:'+w+'px"><small>'+n[1]+'</small>'+n[2]+(n[3]?'<b>'+n[3]+'</b>':'')+'</div>'+(n[0]==='tk'?'':tape())+'</div></div>'}
+ G.forEach(function(g,gi){
+  html+='<div class="mbi" style="--y:'+Math.round((R()-.5)*h*.25)+'px"><div class="mbr" style="--r:'+(R()*16-8).toFixed(1)+'deg"><div class="mbst mbch"><span><i>'+g[1]+'</i><b>'+g[0]+'</b>chapter 0'+(gi+1)+'</span></div></div></div>';
+  var ids=g[2].slice(),pc=0,cnt=0;
+  while(ids.length){var i=ids.shift(),r=(R()*7-3.5).toFixed(2),y,w,s='';cnt++;
+   if(LS.indexOf(i)>-1){
+    if(R()<.55){w=Math.round(h*(mob?.5:.54));y=Math.round((R()<.5?-1:1)*h*(.04+R()*.07));s='<div class="mbi" style="--y:'+y+'px">'+pol(i,w,(r*.6).toFixed(2),'<span class="mbpin" style="left:14%"></span><span class="mbpin" style="left:86%"></span>','',' mbl')+'</div>'}
+    else{w=Math.round(h*(mob?.42:.46));y=Math.round((R()<.5?-1:1)*h*(.1+R()*.07));s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbtn" style="--r:'+r+'deg;--w:'+w+'px">'+img(i)+'<span class="mbtape c"></span>'+tag(i)+'</div></div>'}
+   }else{var k=pc++%3,j=-1;
+    if(k===2){for(var q=0;q<ids.length;q++)if(LS.indexOf(ids[q])<0){j=ids.splice(q,1)[0];break}}
+    if(k===2&&j>0){w=Math.round(h*.33);y=Math.round((R()-.5)*h*.06);
+     s='<div class="mbi" style="--y:'+y+'px"><div class="mbduo">'+pol(i,w,(-3-R()*3).toFixed(1),'<span class="mbpin"></span>','margin-top:-'+Math.round(h*.06)+'px')+pol(j,w,(2+R()*3).toFixed(1),tape(),'margin:'+Math.round(h*.12)+'px 0 0 -'+Math.round(w*.22)+'px')+'</div></div>'}
+    else if(k===0){w=Math.round(h*.5);y=Math.round((R()-.5)*h*.06);s='<div class="mbi" style="--y:'+y+'px">'+pol(i,w,r,tape(R()<.35?' b':''))+'</div>'}
+    else{w=Math.round(h*.36);y=Math.round((R()<.5?-1:.7)*h*(.08+R()*.06));s='<div class="mbi" style="--y:'+y+'px">'+pol(i,w,r,'<span class="mbpin"></span>')+'</div>'}
+   }
+   if(R()<.3)s=s.replace('class="mbi" style="','class="mbi" style="margin-left:-'+Math.round(h*(.04+R()*.06))+'px;z-index:'+(2+Math.floor(R()*3))+';');
+   if(R()<.28)s+='<div class="mbi mbsp" style="--y:'+Math.round((R()-.5)*h*.7)+'px;--r:'+(R()*30-15).toFixed(0)+'deg" aria-hidden="true">'+pick(EM)+'</div>';
+   html+=s;if(cnt===5&&g[2].length>9)html+=note()}
+ });
  root.innerHTML='<div class="mbt"><div class="mbs">'+html+'</div><div class="mbs" aria-hidden="true">'+html+'</div></div>';
  track=root.firstChild;setW=track.firstChild.offsetWidth;
  var d='',amp=h*.3,per=Math.max(700,h*1.6),seg=Math.round(setW/per),pw=setW/seg,cy=h/2;d='M0 '+cy;
