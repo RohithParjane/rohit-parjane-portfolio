@@ -1613,10 +1613,14 @@ body{overflow-x:clip;max-width:100%}html:has(body.po){overflow:hidden!important}
 
 /* footer melts into the page */
 .pg .ftr::before{content:"";position:absolute;left:0;right:0;top:-1px;height:clamp(180px,34%,320px);z-index:4;pointer-events:none;background:linear-gradient(180deg,var(--fb) 0,rgba(var(--fbr,14,12,36),.82) 22%,rgba(var(--fbr,14,12,36),.45) 55%,rgba(var(--fbr,14,12,36),0) 100%)}
-.pg .ftr .ftr-in,.pg .ftr .fs-bar,.pg .ftr .exp-in{position:relative;z-index:6}
+.pg .ftr .ftr-in,.pg .ftr .exp-in{position:relative;z-index:6}.pg .ftr .fs-bar{z-index:7}
 .ftr .fi{transition-duration:1.4s!important}
 
 @media(min-width:701px){.pg>.back{margin-bottom:-4px!important}#p-contact .eye:first-of-type{margin-top:-96px}}
+
+@media(min-width:901px){.pg:not(#p-about):not(#p-resume):not(#p-contact) .ftr .ftr-in{padding-top:max(clamp(40px,4.4vw,70px),104px)!important}.pg:not(#p-about):not(#p-resume) .ftr{max-height:none!important;height:clamp(560px,calc(100vh - 10px),780px)!important}}
+
+@media(min-width:901px){.pg:not(#p-about):not(#p-resume):not(#p-contact) .ftr .fs-bar{bottom:calc(30px + env(safe-area-inset-bottom,0px))!important}}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#about">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#play">Playground</a><a href="#contact">Contact</a></nav>
