@@ -1458,9 +1458,20 @@ body.po .mood{display:flex!important}
  repeating-radial-gradient(ellipse 30% 46% at 70% 64%,transparent 0 22px,rgba(214,171,96,.04) 22px 23px),
  radial-gradient(ellipse 80% 70% at 50% 50%,rgba(40,58,104,.35),transparent 70%);background-size:1400px 100%,1100px 100%,100% 100%;background-repeat:repeat-x}
 
+.mbp figcaption{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 8px;font-size:calc(var(--pp)*1.75)}
+.mbtag{position:absolute;left:8%;bottom:-16px;z-index:4;max-width:88%;box-sizing:border-box;padding:4px 12px 3px;background:linear-gradient(170deg,#fbf3e2,#ecdcb9);color:#4b3517;font:500 19px/1.1 'Caveat',cursive;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:rotate(var(--tr,-3deg));box-shadow:0 4px 8px rgba(0,0,0,.45);border-radius:2px}
+.mbfs .mbtag{bottom:-18px;left:-6%;max-width:none}
+.mbsp{font-size:30px;transform:translateY(var(--y,0px)) rotate(var(--r,0deg));filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));opacity:1;color:inherit;margin-left:-6px;margin-right:24px}
+.mbroute text{font-size:24px;opacity:1}
+@media(max-width:700px){.mbtag{font-size:16px}.mbsp{font-size:24px}}
+
 .mbp.mbl .mbf{height:calc(var(--w)*9/16)}
 .mbp.mbl{padding-bottom:calc(var(--pp)*3.2)}
 
+
+.mbtag{max-width:none!important;overflow:visible!important}
+.mbfs .mbtag2{bottom:auto;top:46%;left:-18%;right:auto}
+.mbp figcaption{white-space:normal;line-height:.95;bottom:calc(var(--pp)*.35)}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#about">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#play">Playground</a><a href="#contact">Contact</a></nav>
@@ -2043,16 +2054,17 @@ var flown=false,wait=0;setInterval(function(){if(flown)return;if(ready()){wait+=
 var N=90,BASE='ph/p',root=document.getElementById('mbx');if(!root)return;
 var built=false,track,setW=0,x=0,v=0,auto=-0.035,drag=null,hover=false,vis=false,last=0,raf=0;
 function rnd(s){return function(){s=(s*16807)%2147483647;return (s-1)/2147483646}}
-var R=rnd(20261118);function pick(a){return a[Math.floor(R()*a.length)]}
+var CAP=["green hills ⛰️", "Anuskura, Konkan 🚙", "sun peeking through ☁️", "Birla Ganpati 🙏", "ISKCON NVCC, Pune 🛕", "ice-cream break 🍨", "tower in the fog 🌫️", "white & breezy ☀️", "Happy Independence Day 🇮🇳", "lunch with a view 🍽️", "plane spotting ✈️", "parasailing! 🪂", "boat club evenings 🚣", "art corner 🎨", "starry night ✨", "temple lights 🪔", "evening vibes 🌇", "temple spires 🛕", "Andharban trail 🥾", "monsoon greens 🌿", "Dagdusheth Ganpati 🙏", "lone tree 🌳", "Marari Beach, Alleppey 🌊", "night out 🌙", "Kundmala 🌉", "city from above 🏙️", "sunset drive, Hinjawadi 🌅", "shake it up 🥤", "on top of Konkan 🏞️", "Phoenix Millennium ✨", "head in the clouds ☁️", "cave window 🌄", "edge of the world 🧗", "ISKCON ceiling art 🦚", "sky drama ⛅", "Alappuzha, Kerala 🛶", "city & clouds 🌥️", "noodle mood 🍜", "Hinjawadi blues 💙", "lost in the fog 🌫️", "Balewadi Stadium 🏟️", "Pawna Lake 🏕️", "Bird Valley, Hinjawadi 🐦", "look up 🌴", "misty peak ⛰️", "jungle roof 🌿", "dusk glow 🌆", "temple day 🛕", "flying over the sea 🪂", "riverside calm 🌉", "window seat 🪟", "bridge to the woods 🌳", "green ridge ⛰️", "cotton candy sky 🌸", "Kasba Peth Ganpati 🙏", "Thekkady, Kerala 🐘", "cliff views 🏞️", "Dagdusheth darshan 🪔", "Pune festivities 🎉", "Mandvi Beach 🌊", "feet up, view on 👟", "Kerala backwaters 🛶", "stars at Devgad ✨", "golden hour 🌇", "carved in wood 🪵", "sea foam 🌊", "blessings 🙏", "houseboat days 🛶", "breakfast with a view 🍉", "can I stop time? ⏳", "sky-high 🏢", "road trip 🚗", "city glow 🌃", "fading light 🌙", "street-lamp moon 💡", "iron lace gate ✨", "Kundmala falls 💦", "Munnar, Kerala 🍃", "Tambaldeg beach 👣", "Shinde Chhatri 🏛️", "foggy morning 🌫️", "iced coffee ☕", "boat ride 🚤", "lantern light 🏮", "Mumbai meri jaan 🌇", "blue hour 💙", "hazy sunset 🌅", "monsoon hills ⛰️", "Kasarsai Dam 🌅", "city lights, Pune 🌃"];var R=rnd(20261118);function pick(a){return a[Math.floor(R()*a.length)]}
 var notes=[["note","field notes","chasing light,<br>one frame at a time"],["pc","postcard","wish you were<br>here, honestly."],["tk","admit one","golden hour","ON THE ROAD"],["note","to-do","ride. click.<br>repeat."],["pc","postcard","mountains &gt;<br>everything"],["st","","Rohit","· on the road ·"],["note","reminder","slow mornings,<br>long roads"],["tk","boarding pass","sunset seat","WINDOW · 26A"],["note","monsoon log","green on<br>green on green"],["st","","2026","· travel diary ·"],["pc","postcard","sea breeze<br>&amp; salt hair"],["note","note to self","look up.<br>always."]];
 function H(){return root.clientHeight}
-function img(i){return '<div class="mbf"><img src="'+BASE+String(i).padStart(2,'0')+'.webp" alt="Travel photo '+i+' by Rohit Parjane" loading="lazy" decoding="async" draggable="false"></div>'}
+function img(i){return '<div class="mbf"><img src="'+BASE+String(i).padStart(2,'0')+'.webp" alt="'+CAP[i-1].replace(/[^\w ,&!?.\-']/g,'').trim()+', photo by Rohit Parjane" loading="lazy" decoding="async" draggable="false"></div>'}
 function build(){
  var h=H(),mob=window.innerWidth<=700,html='',k=0,ni=0,pp=Math.round(h*.022),LS=[1,2,9,13,18,25,26,27,29,32,37,48,50,57,62,76,78,80,81,85,86,90],P=[],L=[];
  for(var q=1;q<=N;q++)(LS.indexOf(q)>-1?L:P).push(q);
  var caps=['wanderlust','home is the road','sky diaries','off the map','temple bells','after the rain','city lights','tiny escapes','summit feels','window seat','chasing clouds','good days'];
  var pat=['big','wide','film','pin','note','torn','big','pin','film','wide','big','torn','note','pin'];
  root.style.setProperty('--gap',(mob?18:30)+'px');
+ var pi,li,EM=['📸','🌴','⛰️','☕','🌊','🧭','✈️','🌅','🎒','🛕','🌧️','🏍️','🍃','⭐'];function tag(i){return '<span class="mbtag" style="--tr:'+(R()*8-4).toFixed(1)+'deg">'+CAP[i-1]+'</span>'}
  function tape(c){return '<span class="mbtape'+(c||'')+'" style="--tr:'+(R()*8-4).toFixed(1)+'deg"></span>'}
  while(P.length||L.length){var t=pat[k++%pat.length],r=(R()*7-3.5).toFixed(2),y,w,s='';
   if((t==='wide'||t==='torn')&&!L.length)t='big';
@@ -2061,24 +2073,24 @@ function build(){
    if(n[0]==='st')s='<div class="mbi" style="--y:'+y+'px"><div class="mbr" style="--r:'+(R()*24-12).toFixed(1)+'deg"><div class="mbst"><span><b>'+n[2]+'</b>'+n[3]+'</span></div></div></div>';
    else{w=Math.round(h*(n[0]==='tk'?.34:.4));s='<div class="mbi" style="--y:'+y+'px"><div class="mbr" style="--r:'+r+'deg"><div class="mbn '+n[0]+'" style="--w:'+w+'px"><small>'+n[1]+'</small>'+n[2]+(n[3]?'<b>'+n[3]+'</b>':'')+'</div>'+(n[0]==='tk'?'':tape())+'</div></div>'}
    html+=s;continue}
-  if(t==='big'){w=Math.round(h*.4);y=Math.round((R()-.5)*h*.06);var cap=R()<.55?'<figcaption>'+pick(caps)+'</figcaption>':'';
-   s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0">'+img(P.shift())+cap+tape(R()<.35?' b':'')+'</figure></div>'}
-  else if(t==='pin'){w=Math.round(h*.29);y=Math.round((R()<.5?-1:1)*h*(.1+R()*.08));
-   s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+Math.round(pp*.8)+'px;margin:0">'+img(P.shift())+'<span class="mbpin"></span></figure></div>'}
-  else if(t==='film'){w=Math.round(h*.215);y=Math.round((R()-.5)*h*.04);var a=img(P.shift()),b=P.length?img(P.shift()):'';
-   s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbfs" style="--r:'+(r*.5).toFixed(2)+'deg;--w:'+w+'px">'+a+b+'</div></div>'}
-  else if(t==='wide'){w=Math.round(h*(mob?.78:.86));y=Math.round((R()<.5?-1:1)*h*(.06+R()*.08));var cp=R()<.6?'<figcaption>'+pick(caps)+'</figcaption>':'';
-   s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp mbl" style="--r:'+(r*.6).toFixed(2)+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0">'+img(L.shift())+cp+'<span class="mbpin" style="left:14%"></span><span class="mbpin" style="left:86%"></span></figure></div>'}
+  if(t==='big'){w=Math.round(h*.4);y=Math.round((R()-.5)*h*.06);var pi=P.shift();
+   s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0">'+img(pi)+'<figcaption>'+CAP[pi-1]+'</figcaption>'+tape(R()<.35?' b':'')+'</figure></div>'}
+  else if(t==='pin'){w=Math.round(h*.29);y=Math.round((R()<.5?-1:.7)*h*(.1+R()*.06));
+   s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+Math.round(pp*.8)+'px;margin:0">'+img(pi=P.shift())+'<span class="mbpin"></span>'+tag(pi)+'</figure></div>'}
+  else if(t==='film'){w=Math.round(h*.215);y=Math.round((R()-.5)*h*.04);var ia=P.shift(),ib=P.length?P.shift():0,a=img(ia),b=ib?img(ib):'';
+   s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbfs" style="--r:'+(r*.5).toFixed(2)+'deg;--w:'+w+'px">'+a+b+(ib?tag(ib)+tag(ia).replace('class="mbtag"','class="mbtag mbtag2"'):tag(ia))+'</div></div>'}
+  else if(t==='wide'){w=Math.round(h*(mob?.78:.86));y=Math.round((R()<.5?-1:1)*h*(.06+R()*.08));var li=L.shift();
+   s='<div class="mbi" style="--y:'+y+'px"><figure class="mbr mbp mbl" style="--r:'+(r*.6).toFixed(2)+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0">'+img(li)+'<figcaption>'+CAP[li-1]+'</figcaption>'+'<span class="mbpin" style="left:14%"></span><span class="mbpin" style="left:86%"></span></figure></div>'}
   else{w=Math.round(h*(mob?.66:.72));y=Math.round((R()<.5?-1:1)*h*(.14+R()*.08));
-   s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbtn" style="--r:'+r+'deg;--w:'+w+'px">'+img(L.shift())+'<span class="mbtape c"></span></div></div>'}
+   s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbtn" style="--r:'+r+'deg;--w:'+w+'px">'+img(li=L.shift())+'<span class="mbtape c"></span>'+tag(li)+'</div></div>'}
   if(R()<.45)s=s.replace('class="mbi" style="','class="mbi" style="margin-left:-'+Math.round(h*(.05+R()*.07))+'px;z-index:'+(2+Math.floor(R()*3))+';');
-  if(R()<.16)s+='<div class="mbi mbsp" style="--y:'+Math.round((R()-.5)*h*.7)+'px" aria-hidden="true">✦</div>';
+  if(R()<.32)s+='<div class="mbi mbsp" style="--y:'+Math.round((R()-.5)*h*.7)+'px;--r:'+(R()*30-15).toFixed(0)+'deg" aria-hidden="true">'+pick(EM)+'</div>';
   html+=s}
  root.innerHTML='<div class="mbt"><div class="mbs">'+html+'</div><div class="mbs" aria-hidden="true">'+html+'</div></div>';
  track=root.firstChild;setW=track.firstChild.offsetWidth;
  var d='',amp=h*.3,per=Math.max(700,h*1.6),seg=Math.round(setW/per),pw=setW/seg,cy=h/2;d='M0 '+cy;
  for(var z=0;z<seg;z++){var x0=z*pw,a=(z%2?-1:1)*amp*(.6+R()*.4);d+=' C'+(x0+pw*.35).toFixed(0)+' '+(cy-a).toFixed(0)+' '+(x0+pw*.65).toFixed(0)+' '+(cy+a).toFixed(0)+' '+(x0+pw).toFixed(0)+' '+cy}
- var marks='',mk=['✈','✦','⌖','✧'];for(var z=1;z<seg;z+=2)marks+='<text x="'+(z*pw).toFixed(0)+'" y="'+(cy+6)+'" text-anchor="middle">'+mk[z%mk.length]+'</text>';
+ var marks='',mk=['✈️','📍','🧭','⛺','🌄','📍'];for(var z=1;z<seg;z+=2)marks+='<text x="'+(z*pw).toFixed(0)+'" y="'+(cy+6)+'" text-anchor="middle">'+mk[z%mk.length]+'</text>';
  var svg='<svg class="mbroute" viewBox="0 0 '+setW+' '+h+'" width="'+setW+'" height="'+h+'" aria-hidden="true"><path d="'+d+'"/>'+marks+'</svg>';
  [].forEach.call(track.children,function(s){s.insertAdjacentHTML('afterbegin',svg)});
  built=true;x=-setW*.02}
