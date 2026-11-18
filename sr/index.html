@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shadow Run</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;background:#07060c;color:#bdb6e6;font-family:"Press Start 2P",monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px;-webkit-user-select:none;user-select:none}
+  .frame{width:100%;max-width:960px;border:2px solid #2a2440;box-shadow:0 0 0 4px #0d0b16,0 0 40px rgba(63,240,208,.12)}
+  canvas{display:block;width:100%;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none;cursor:pointer;background:#0c0a14}
+  .hint{font-size:10px;line-height:1.9;color:#6f6893;text-align:center;letter-spacing:.5px}
+  .hint b{color:#bdb6e6;font-weight:normal}
+  .pad{display:none;gap:10px;width:100%;max-width:960px}
+  .pad button{flex:1;font-family:inherit;font-size:11px;color:#d9d4ff;background:#16122a;border:2px solid #3b3260;padding:18px 8px;touch-action:none;-webkit-tap-highlight-color:transparent}
+  .pad button:active,.pad button.on{background:#2a2250;border-color:#7b5cff}
+  .pad #bArise{color:#3ff0d0}
+  .pad #bSlash{color:#ffd36b}
+  .mute{font-family:inherit;font-size:9px;color:#6f6893;background:none;border:2px solid #2a2440;padding:8px 10px;cursor:pointer}
+  .mute:hover{color:#bdb6e6;border-color:#3b3260}
+  @media (hover:none) and (pointer:coarse){.pad{display:flex}.hint.keys{display:none}}
+</style>
+</head>
+<body>
+<div class="frame"><canvas id="g"></canvas></div>
+<div class="pad">
+  <button id="bJump">JUMP</button>
+  <button id="bDuck">DUCK</button>
+  <button id="bSlash">SWING</button>
+  <button id="bArise">SUMMON</button>
+</div>
+<p class="hint keys"><b>SPACE</b> / <b>UP</b> jump &nbsp; <b>DOWN</b> duck &nbsp; <b>F</b> / <b>J</b> swing staff &nbsp; <b>A</b> summon<br>Hit monsters for XP and level up your staff. Lv 3 = Hunter Rank, Lv 6 = Awakened.<br>Collect 3 souls, then press A to unleash your panther. Your owl gathers nearby souls from Lv 3.</p>
+<button class="mute" id="mute">SOUND: ON</button>
+
+<script>
+(() => {
+const cvs = document.getElementById('g');
+const ctx = cvs.getContext('2d');
+const W = 640, H = 230, GY = 196;
+cvs.width = W; cvs.height = H;
+ctx.imageSmoothingEnabled = false;
+
+/* ---------- sprites (each char = one pixel, drawn at scale) ---------- */
+/* Hero: Rohit — dark hair, sunglasses, beard, leather jacket, panther tee, cargos, boots, red cape */
+const HEADR = [
+  "..........hhhhh......",
+  "........hhhHHhhh.....",
+  ".......hhhhhhHHhh....",
+  ".......hhhhhhhhhh....",
+  ".......hhhhsssssh....",
+  "........hhsggGgg.....",
+  "........hSsssssss....",
+  ".........BBsssBBs....",
+  ".........BBBBBBB.....",
+  "..........SsssS......",
+];
+const TORSO_A = [
+  "...RRRRJJJTTTTJJ.....",
+  "..RRRrJJaJTvvTJaJ....",
+  ".RRRrRJJaJTvvvTJJ....",
+  "RRRrR.JJJaTTvTTJJss..",
+  "RRrRr.JJJJTTTTJJJ....",
+  "Rr..r.jJJJTTTTJJ.....",
+  "r.....JJpppppppJ.....",
+  "......ppppppppp......",
+];
+const TORSO_B = [
+  "..R.RRRJJJTTTTJJ.....",
+  ".RRRRRJJaJTvvTJaJ....",
+  "RRRRrrJJaJTvvvTJJ....",
+  "Rr.RrRJJJaTTvTTJJss..",
+  "r..rR.JJJJTTTTJJJ....",
+  "R..R..jJJJTTTTJJ.....",
+  "......JJpppppppJ.....",
+  "......ppppppppp......",
+];
+const LEG_R1 = ["......pppq..ppp......",".....pppq....ppp.....",".....ppq......pp.....","....bbb.......bbb....","....bbbb......bbbb...","....ccc.......ccc...."];
+const LEG_R2 = [".......ppppqp........","........pppq.........","........pp.pq........","........bb..bbb......",".......bbbb.bbbb.....",".......ccc...ccc....."];
+const LEG_J = ["......ppppppp........","......ppq..ppp.......",".....bbb....bbb......",".....bbbb...bbbb.....",".....ccc.....ccc.....","....................."];
+const RUN1 = HEADR.concat(TORSO_A, LEG_R1);
+const RUN2 = HEADR.concat(TORSO_B, LEG_R2);
+const JUMP = HEADR.concat(TORSO_A, LEG_J);
+const DUCK = [
+  "............hhhhh.....",
+  "...........hhhHHhh....",
+  "..........hhhhhhhhh...",
+  "..........hhhsssssh...",
+  "...........hssggGgg...",
+  "RRRRRR.....hSsssssss..",
+  "RRrRRRRRJJJJBBssBB....",
+  ".rRrJJJaJTTTvvTJJss...",
+  "..RrJJJJJTTTTTTJJ.....",
+  "...JJpppppppppp.......",
+  "...ppq......ppp.......",
+  "..bbbb......bbbb......",
+  "..ccc.......ccc.......",
+];
+const OWL1 = ["..o...o..","..ooooo..",".oYoooYo.",".ooo^ooo.","wwRRRRRww","w.ooooo.w","...ooo...","...k.k..."];
+const OWL2 = ["..o...o..","..ooooo..",".oYoooYo.",".ooo^ooo.",".wRRRRRw.","wwoooooww","w..ooo..w","...k.k..."];
+const PANTHER_TOP = [
+  "....................kk....",
+  "...................kkkk...",
+  "..................kkkkYk..",
+  ".......RRRRRR....kkkkkkkkk",
+  "......RRRgRRRRkkkkkkkkkk..",
+  "....kkRRRRRRkkkkkkkkkk....",
+  "..kkkkkkkkkkkkkkkkkkk.....",
+  ".kk.kkkkkkkkkkkkkkkk......",
+];
+const PANTHER1 = PANTHER_TOP.concat(["kk...kkkk......kkkk.......","k...kk..kk....kk..kk......","...kk....kk..kk....kk.....","..kk......k.kk......kk...."]);
+const PANTHER2 = PANTHER_TOP.concat(["kk....kkkk....kkkk........","k......kkkk..kkkk.........",".......kk.kkkk.kk.........","......kk...kk...kk........"]);
+const HERO_H = 48, DUCK_H = 26;
+const GHOUL = [
+  "...XXXX...",
+  "..XXXXXX..",
+  "..X#XX#X..",
+  "..XXXXXX..",
+  "...XoXX...",
+  ".XXXXXXXX.",
+  "XX.XXXX.XX",
+  "X..XXXX..X",
+  "X..XXXX..X",
+  "...XXXX...",
+  "...XXXX...",
+  "...X..X...",
+  "...X..X...",
+  "..XX..XX..",
+];
+const BAT1 = [
+  "X..............X",
+  "XX............XX",
+  "XXX...XXXX...XXX",
+  ".XXXXXX##XXXXXX.",
+  "..XXXXXXXXXXXX..",
+  ".......XX.......",
+];
+const BAT2 = [
+  "......XXXX......",
+  ".....XX##XX.....",
+  "..XXXXXXXXXXXX..",
+  ".XXXXX....XXXXX.",
+  "XXX..........XXX",
+  "XX............XX",
+];
+const CRYSTAL = [
+  "...X....",
+  "..XhX...",
+  "..XhX...",
+  ".XXhXX..",
+  ".XXhXX..",
+  ".XXhXX.X",
+  "XXXhXXXX",
+  "XXXhXXhX",
+  "XXXhXXhX",
+  "XXXhXXhX",
+  "XXXXXXXX",
+  "XXXXXXXX",
+];
+const SOUL1 = ["..X..",".XX..",".XXX.","XXoXX","XoooX",".XoX."];
+const SOUL2 = ["..X..","..XX.",".XXX.","XXoXX","XoooX",".XoX."];
+
+function sprite(rows, x, y, pal, s = 2, outline = null) {
+  if (outline) {
+    ctx.fillStyle = outline;
+    for (let r = 0; r < rows.length; r++) {
+      const row = rows[r];
+      for (let c = 0; c < row.length; c++) {
+        if (!pal[row[c]]) continue;
+        ctx.fillRect(Math.round(x + c * s) - 1, Math.round(y + r * s) - 1, Math.ceil(s) + 2, Math.ceil(s) + 2);
+      }
+    }
+  }
+  for (let r = 0; r < rows.length; r++) {
+    const row = rows[r];
+    for (let c = 0; c < row.length; c++) {
+      const col = pal[row[c]];
+      if (!col) continue;
+      ctx.fillStyle = col;
+      ctx.fillRect(Math.round(x + c * s), Math.round(y + r * s), Math.ceil(s), Math.ceil(s));
+    }
+  }
+}
+
+/* ---------- colours ---------- */
+const THEMES = [
+  { bg:'#07060e', sky:'#0a0816', horizon:'#241c48', moon:'#dfe3f5', mount:'#2a2250', ruin:'#0f0c1c', ruinDark:'#08070f', fog:'#8b84c9',
+    stone:'#1d1930', stoneDark:'#0c0a15', ground:'#3b3260', accent:'#7b5cff', glow:'#3ff0d0', gold:'#ffd36b', cape:'#e0302a' },
+  { bg:'#0e0406', sky:'#120408', horizon:'#4a111e', moon:'#ff9a8a', mount:'#3e1019', ruin:'#17070b', ruinDark:'#0c0306', fog:'#c96b78',
+    stone:'#2a0f16', stoneDark:'#120508', ground:'#5c2532', accent:'#ff3b5c', glow:'#ffb35c', gold:'#ffd36b', cape:'#ff3b2e' },
+];
+function hex(h){ return [1,3,5].map(i => parseInt(h.slice(i,i+2),16)); }
+function mixArr(a,b,t){ const A=hex(a),B=hex(b); return A.map((v,i)=>Math.round(v+(B[i]-v)*t)); }
+function theme(k){ return 'rgb(' + mixArr(THEMES[0][k], THEMES[1][k], breakT).join(',') + ')'; }
+function themeA(k,a){ return 'rgba(' + mixArr(THEMES[0][k], THEMES[1][k], breakT).join(',') + ',' + a + ')'; }
+function glowAt(x, y, r, k, a) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, themeA(k, a));
+  g.addColorStop(1, themeA(k, 0));
+  ctx.fillStyle = g;
+  ctx.fillRect(x - r, y - r, r * 2, r * 2);
+}
+
+/* ---------- sound ---------- */
+let ac = null, muted = false;
+function snd(f1, f2, d, type = 'square', vol = .05) {
+  if (muted) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain(), n = ac.currentTime;
+    o.type = type;
+    o.frequency.setValueAtTime(f1, n);
+    o.frequency.exponentialRampToValueAtTime(f2, n + d);
+    g.gain.setValueAtTime(vol, n);
+    g.gain.exponentialRampToValueAtTime(.0001, n + d);
+    o.connect(g).connect(ac.destination);
+    o.start(n); o.stop(n + d);
+  } catch (e) {}
+}
+
+/* ---------- state ---------- */
+let hi = 0;
+try { hi = +localStorage.getItem('shadowrun-hi') || 0; } catch (e) {}
+
+let state = 'start', t = 0, overAt = 0;
+let hero, obstacles, souls, knights, particles, score, speed, soulCount;
+let level, xp, slashT, slashCd, waves, bannerSub = '', owl = null, slowT = 0;
+let nextSpawn, nextSoul, farX, groundX, breakT, breakTarget, lastMile;
+let shake = 0, flash = 0, bolt = 0, bannerText = '', bannerT = 0;
+const input = { duck:false };
+
+const pebbles = Array.from({length: 46}, () => ({ x: Math.random()*W, y: GY + 5 + Math.random()*26, w: 2 + (Math.random()*3|0) }));
+const motes = Array.from({length: 40}, () => ({ x: Math.random()*W, y: Math.random()*(GY-20), s: Math.random()*.5 + .2, p: Math.random()*6 }));
+
+function reset() {
+  hero = { x: 56, y: GY - HERO_H, vy: 0, ground: true, duck: false, anim: 0, inv: 0, trail: [] };
+  owl = { x: 30, y: GY - HERO_H - 26 };
+  slowT = 0;
+  obstacles = []; souls = []; knights = []; particles = [];
+  score = 0; speed = 6; soulCount = 0;
+  level = 1; xp = 0; slashT = 0; slashCd = 0; waves = [];
+  nextSpawn = 420; nextSoul = 700;
+  farX = 0; groundX = 0; breakT = 0; breakTarget = 0; lastMile = 0;
+  bannerT = 0;
+}
+reset();
+
+const rand = (a, b) => a + Math.random() * (b - a);
+const hit = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+function banner(txt, dur = 90, sub = '') { bannerText = txt; bannerT = dur; bannerSub = sub; }
+
+/* ---------- weapon & levels ---------- */
+const WEAPONS = [
+  { name: 'OAK STAFF',      blade: '#c9a24a', edge: '#f0dca0', len: 14 },
+  { name: 'BOUND STAFF',    blade: '#d6b25a', edge: '#fff0c0', len: 16 },
+  { name: 'MOONSTONE STAFF',blade: '#bcd4ff', edge: '#ffffff', len: 18, breaks: true },
+  { name: 'SPIRIT STAFF',   blade: '#3ff0d0', edge: '#e9fffb', len: 20, breaks: true, glow: true },
+  { name: 'EMBER STAFF',    blade: '#ff6a3d', edge: '#ffe0c8', len: 22, breaks: true, glow: true },
+  { name: 'AWAKENED STAFF', blade: '#ffd36b', edge: '#fffbe6', len: 25, breaks: true, glow: true, wave: true },
+];
+const XP_FOR = { ghoul: 20, bat: 25, crystal: 15 };
+const weapon = () => WEAPONS[Math.min(level, WEAPONS.length) - 1];
+const xpNeed = () => 30 + level * 30;
+const slashRange = () => 30 + Math.min(level, 6) * 6 + Math.max(0, level - 6) * 2;
+
+function gainXP(n) {
+  if (state !== 'run') return;
+  xp += n;
+  while (xp >= xpNeed()) {
+    xp -= xpNeed(); level++;
+    const w = weapon();
+    const unlock = level === 3 ? 'STAFF NOW SHATTERS CRYSTALS' : level === 6 ? 'SWINGS FIRE ENERGY WAVES' : '';
+    if (level === 3 || level === 6) {
+      banner(level === 3 ? 'HUNTER RANK!' : 'AWAKENED!', 130, w.name + ' - ' + unlock);
+      slowT = 45; hero.inv = 120; flash = 1; shake = Math.max(shake, 10);
+      for (const o of obstacles) if (o.x < hero.x + 220) { o.dead = true; burst(o.x + o.w / 2, o.y + o.h / 2, w.blade, 12, 3); }
+      [262, 330, 392, 523, 659, 784].forEach((fq, i) => setTimeout(() => snd(fq, fq * 1.01, .18, 'square', .05), i * 90));
+    } else banner('LEVEL UP!  LV ' + level, 110, level <= WEAPONS.length ? w.name : 'POWER INCREASED');
+    flash = Math.max(flash, .6); shake = Math.max(shake, 5);
+    burst(hero.x + 16, hero.y + 20, w.blade, 34, 4.5);
+    [523, 659, 784, 1047].forEach((fq, i) => setTimeout(() => snd(fq, fq * 1.01, .14, 'square', .045), i * 80));
+  }
+}
+
+function slash() {
+  if (state !== 'run' || slashCd > 0) return;
+  slashT = 12;
+  slashCd = Math.max(12, 30 - level * 3);
+  snd(1400, 260, .13, 'sawtooth', .03);
+  if (weapon().wave) waves.push({ x: hero.x + 34, y: hero.duck ? GY - 44 : hero.y - 6, life: 0 });
+}
+
+function killObstacle(o, xpMul = 1) {
+  o.dead = true;
+  score += 30;
+  gainXP(Math.round((XP_FOR[o.type] || 15) * xpMul));
+  burst(o.x + o.w / 2, o.y + o.h / 2, o.type === 'crystal' ? theme('accent') : '#e8e2ff', 18, 3.5);
+  shake = Math.max(shake, 4);
+  snd(160, 60, .14, 'square', .045);
+}
+
+function burst(x, y, color, n = 14, power = 3) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = Math.random() * power;
+    particles.push({ x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v - 1, life: 0, max: rand(20, 40), color, size: Math.random() < .5 ? 2 : 3, grav: .08 });
+  }
+}
+
+function heroBox() {
+  if (hero.duck) return { x: hero.x + 8, y: GY - 21, w: 30, h: 21 };
+  return { x: hero.x + 12, y: hero.y + 6, w: 16, h: 41 };
+}
+
+/* ---------- actions ---------- */
+function start() {
+  if (state === 'over' && performance.now() - overAt < 450) return;
+  reset(); state = 'run';
+  snd(330, 660, .15);
+}
+function jump() {
+  if (state !== 'run') { start(); return; }
+  if (hero.ground && !input.duck) {
+    hero.vy = -11.2; hero.ground = false;
+    snd(420, 760, .1);
+  }
+}
+function arise() {
+  if (state !== 'run') return;
+  if (soulCount < 3) { snd(160, 120, .08, 'square', .03); return; }
+  soulCount -= 3;
+  knights.push({ x: hero.x - 6, anim: 0 });
+  flash = 1; shake = 7;
+  banner('PANTHER STRIKE!', 60);
+  snd(196, 784, .35, 'square', .05);
+  setTimeout(() => snd(294, 1175, .3, 'square', .04), 90);
+  burst(hero.x + 16, GY - 20, '#ffd36b', 26, 4);
+}
+function die() {
+  state = 'over'; overAt = performance.now();
+  shake = 14;
+  const s = Math.floor(score);
+  if (s > hi) { hi = s; try { localStorage.setItem('shadowrun-hi', hi); } catch (e) {} }
+  burst(hero.x + 16, hero.y + 20, '#3ff0d0', 30, 4);
+  snd(300, 50, .55, 'sawtooth', .06);
+}
+
+/* ---------- spawning ---------- */
+function spawn() {
+  const r = Math.random();
+  if (score > 180 && r < .3) {
+    const lvl = Math.random();
+    const y = lvl < .4 ? GY - 14 : lvl < .8 ? GY - 36 : GY - 74;
+    obstacles.push({ type: 'bat', x: W + 20, y, w: 32, h: 12, extra: 1, anim: 0 });
+  } else if (r < .62) {
+    const n = speed > 8.5 ? 1 + (Math.random()*3|0) : 1 + (Math.random()*2|0);
+    obstacles.push({ type: 'crystal', x: W + 20, y: GY - 24, w: n * 16, h: 24, n, anim: 0 });
+  } else {
+    obstacles.push({ type: 'ghoul', x: W + 20, y: GY - 28, w: 20, h: 28, anim: 0 });
+  }
+  nextSpawn = rand(300, 560) + speed * 12;
+}
+function spawnSoul() {
+  const high = Math.random() < .5;
+  souls.push({ x: W + 30, y: high ? GY - 84 : GY - 26, anim: Math.random() * 10 });
+  nextSoul = rand(520, 1100);
+}
+
+/* ---------- update ---------- */
+function update(f) {
+  t += f;
+  if (shake > 0) shake = Math.max(0, shake - f);
+  if (flash > 0) flash = Math.max(0, flash - .05 * f);
+  if (bolt > 0) bolt = Math.max(0, bolt - f);
+  if (bannerT > 0) bannerT -= f;
+  for (const m of motes) { m.y -= m.s * f * .4; m.x -= (state === 'run' ? speed * .08 : .2) * f; if (m.y < 0) m.y = GY - 10; if (m.x < 0) m.x = W; }
+
+  if (state === 'run') {
+    speed = Math.min(13, 6 + score / 220);
+    score += speed * f / 36;
+
+    const mile = Math.floor(score / 100);
+    if (mile > lastMile) { lastMile = mile; snd(880, 1320, .12, 'square', .035); gainXP(10); }
+
+    const target = (score % 1400) >= 700 ? 1 : 0;
+    if (target !== breakTarget) {
+      breakTarget = target;
+      banner(target ? 'DUNGEON BREAK!' : 'GATE CLEARED');
+      snd(target ? 220 : 660, target ? 90 : 990, .45, 'sawtooth', .04);
+    }
+
+    if (breakT > .6 && Math.random() < .004 * f) { bolt = 10; shake = Math.max(shake, 3); snd(90, 40, .5, 'sawtooth', .035); }
+
+    // hero physics
+    hero.duck = input.duck && hero.ground;
+    if (!hero.ground) {
+      hero.vy += (input.duck ? 1.5 : .6) * f;
+      hero.y += hero.vy * f;
+      if (hero.y >= GY - HERO_H) {
+        hero.y = GY - HERO_H; hero.vy = 0; hero.ground = true;
+        for (let i = 0; i < 5; i++) particles.push({ x: hero.x + 10 + rand(-6, 10), y: GY - 2, vx: rand(-1.5, .5), vy: rand(-1, -.2), life: 0, max: 18, color: theme('ground'), size: 2, grav: .05 });
+      }
+    }
+    hero.anim += speed * f * .035;
+    if (hero.inv > 0) hero.inv -= f;
+    if (tier() === 2 && Math.floor(t) % 3 === 0) { hero.trail.push({ rows: heroRows(), x: hero.x, y: hero.duck ? GY - DUCK_H : hero.y }); if (hero.trail.length > 3) hero.trail.shift(); }
+    // owl companion follows, and from Lv 3 pulls nearby souls in
+    const ox = hero.x - 26 + Math.sin(t * .05) * 4, oy = (hero.duck ? GY - 46 : hero.y - 24) + Math.sin(t * .09) * 4;
+    owl.x += (ox - owl.x) * .15 * f; owl.y += (oy - owl.y) * .15 * f;
+    if (tier() >= 1) for (const sl of souls) { if (sl.x - hero.x < 110 && sl.x > hero.x - 20) { sl.x += (hero.x + 16 - sl.x) * .08 * f; sl.y += ((hero.duck ? GY - 16 : hero.y + 20) - sl.y) * .08 * f; } }
+
+    // shadow aura trailing from the cloak
+    if (Math.random() < .7 * f) {
+      const cy = hero.duck ? GY - 14 : hero.y + 26, tr = tier();
+      const pc = tr === 2 ? (Math.random() < .6 ? '#ffd36b' : '#ff7a3d') : tr === 1 ? (Math.random() < .6 ? '#e0302a' : '#ffb35c') : (Math.random() < .5 ? '#8a1a14' : '#5a4334');
+      if (tr > 0 || Math.random() < .5) particles.push({ x: hero.x + 2, y: cy + rand(-8, 8), vx: -rand(1, 2.5), vy: -rand(.1, .6), life: 0, max: rand(16, 30), color: pc, size: 2, grav: 0, fade: true });
+      if (tr === 2 && Math.random() < .6) particles.push({ x: hero.x + rand(8, 30), y: (hero.duck ? GY - 20 : hero.y) + rand(10, 44), vx: -rand(.5, 1.5), vy: -rand(.8, 1.8), life: 0, max: rand(14, 24), color: Math.random() < .5 ? '#ffd36b' : '#fff1c2', size: 2, grav: 0, fade: true });
+    }
+
+    farX += speed * .25 * f;
+    groundX += speed * f;
+
+    nextSpawn -= speed * f; if (nextSpawn <= 0) spawn();
+    nextSoul -= speed * f;  if (nextSoul <= 0) spawnSoul();
+
+    for (const o of obstacles) { o.x -= (speed + (o.extra || 0)) * f; o.anim += f; }
+    obstacles = obstacles.filter(o => o.x + o.w > -30);
+
+    const hb = heroBox();
+    for (const s of souls) {
+      s.x -= speed * f; s.anim += f;
+      if (!s.got && hit(hb, { x: s.x, y: s.y, w: 10, h: 12 })) {
+        s.got = true;
+        soulCount = Math.min(9, soulCount + 1);
+        score += 25;
+        burst(s.x + 5, s.y + 6, theme('glow'), 10, 2);
+        snd(990, 1760, .12, 'triangle', .06);
+        gainXP(10);
+        if (soulCount === 3 && bannerT <= 0) banner('PRESS A TO SUMMON', 70);
+      }
+    }
+    souls = souls.filter(s => !s.got && s.x > -20);
+
+    for (const k of knights) {
+      k.x += (speed + 9) * f; k.anim += f;
+      const kb = { x: k.x, y: GY - 100, w: 62, h: 100 };
+      for (const o of obstacles) {
+        if (!o.dead && hit(kb, o)) {
+          killObstacle(o, .5); score += 20;
+        }
+      }
+      if (Math.random() < .8 * f) particles.push({ x: k.x + rand(0, 10), y: GY - rand(4, 38), vx: -rand(1, 3), vy: -rand(0, .5), life: 0, max: rand(14, 26), color: Math.random() < .5 ? '#e0302a' : '#3a3442', size: 3, grav: 0, fade: true });
+    }
+    // sword slash
+    if (slashCd > 0) slashCd -= f;
+    if (slashT > 0) {
+      slashT -= f;
+      if (slashT > 3) {
+        const sb = { x: hero.x + 22, y: hero.duck ? GY - 40 : hero.y - 10, w: slashRange(), h: 56 };
+        for (const o of obstacles) {
+          if (o.dead || !hit(sb, o)) continue;
+          if (o.type === 'crystal' && !weapon().breaks) {
+            if (!o.clang) { o.clang = true; snd(2200, 1800, .08, 'square', .03); burst(o.x + 2, o.y + 6, '#ffffff', 6, 2); }
+          } else killObstacle(o);
+        }
+      }
+    }
+    for (const w of waves) {
+      w.x += (speed + 10) * f; w.life += f;
+      const wb = { x: w.x, y: GY - 80, w: 18, h: 80 };
+      for (const o of obstacles) if (!o.dead && hit(wb, o)) killObstacle(o, .75);
+      if (Math.random() < .6 * f) particles.push({ x: w.x, y: w.y + rand(0, 60), vx: -rand(1, 2), vy: 0, life: 0, max: 16, color: weapon().blade, size: 2, grav: 0, fade: true });
+    }
+    waves = waves.filter(w => w.x < W + 30);
+
+    obstacles = obstacles.filter(o => !o.dead);
+    knights = knights.filter(k => k.x < W + 60);
+
+    for (const o of obstacles) {
+      const ob = { x: o.x + 2, y: o.y + 2, w: o.w - 4, h: o.h - 3 };
+      if (hero.inv <= 0 && hit(hb, ob)) { die(); break; }
+    }
+  } else {
+    breakT += (0 - breakT) * .02 * f;
+  }
+  if (state === 'run') breakT += (breakTarget - breakT) * .04 * f;
+
+  for (const p of particles) { p.life += f; p.x += p.vx * f; p.y += p.vy * f; p.vy += (p.grav || 0) * f; }
+  particles = particles.filter(p => p.life < p.max);
+}
+
+/* ---------- draw ---------- */
+const pad = n => String(Math.floor(n)).padStart(5, '0');
+
+function text(str, x, y, color, size = 10, align = 'left', glow = null) {
+  ctx.font = size + 'px "Press Start 2P", monospace';
+  ctx.textAlign = align; ctx.textBaseline = 'top';
+  ctx.fillStyle = 'rgba(0,0,0,.75)'; ctx.fillText(str, x + 2, y + 2);
+  if (glow) { ctx.shadowColor = glow; ctx.shadowBlur = 12; }
+  ctx.fillStyle = color; ctx.fillText(str, x, y);
+  ctx.shadowBlur = 0;
+}
+
+/* scenery, generated once */
+const MT_W = 1280;
+const mountains = (() => {
+  const a = []; let h = 55;
+  for (let x = 0; x < MT_W; x += 8) { h += rand(-10, 10); h = Math.max(25, Math.min(92, h)); a.push(h); }
+  for (let i = 0; i < 12; i++) { const k = a.length - 12 + i; a[k] = a[k] + (a[0] - a[k]) * (i / 12); }
+  return a;
+})();
+const RUIN_W = 1120;
+const ruins = [
+  { x: 30,  w: 34,  h: 122, kind: 'tower',  torch: true, win: true },
+  { x: 200, w: 22,  h: 78,  kind: 'broken' },
+  { x: 330, w: 46,  h: 146, kind: 'tower',  torch: true, win: true },
+  { x: 510, w: 18,  h: 96,  kind: 'broken' },
+  { x: 640, w: 128, h: 66,  kind: 'arch',   torch: true },
+  { x: 870, w: 30,  h: 132, kind: 'tower',  win: true },
+  { x: 1010,w: 20,  h: 70,  kind: 'broken' },
+];
+const stars = Array.from({ length: 56 }, () => ({ x: Math.random() * W, y: Math.random() * 120, p: Math.random() * 6, big: Math.random() < .15 }));
+const vignette = (() => {
+  const g = ctx.createRadialGradient(W / 2, H / 2, H * .3, W / 2, H / 2, W * .62);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.62)');
+  return g;
+})();
+const scanlines = (() => {
+  const c = document.createElement('canvas'); c.width = 1; c.height = 3;
+  const x = c.getContext('2d'); x.fillStyle = 'rgba(0,0,0,.16)'; x.fillRect(0, 2, 1, 1);
+  return ctx.createPattern(c, 'repeat');
+})();
+
+function drawSky() {
+  const g = ctx.createLinearGradient(0, 0, 0, GY);
+  g.addColorStop(0, theme('sky')); g.addColorStop(1, theme('horizon'));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, GY);
+
+  for (const s of stars) {
+    ctx.globalAlpha = .25 + .45 * (Math.sin(t * .04 + s.p) * .5 + .5);
+    ctx.fillStyle = '#e8e6ff';
+    ctx.fillRect(Math.round(s.x), Math.round(s.y), s.big ? 2 : 1, s.big ? 2 : 1);
+  }
+  ctx.globalAlpha = 1;
+
+  // moon
+  const cx = W - 118, cy = 54, r = 22;
+  glowAt(cx, cy, 80, 'moon', .16);
+  ctx.fillStyle = theme('moon');
+  for (let dy = -r; dy <= r; dy++) { const hw = Math.round(Math.sqrt(r * r - dy * dy)); ctx.fillRect(cx - hw, cy + dy, hw * 2, 1); }
+  ctx.fillStyle = 'rgba(40,30,70,.22)';
+  ctx.fillRect(cx - 9, cy - 8, 6, 5); ctx.fillRect(cx + 4, cy + 3, 8, 6); ctx.fillRect(cx - 4, cy + 10, 4, 3); ctx.fillRect(cx + 8, cy - 12, 3, 3);
+  ctx.fillStyle = 'rgba(0,0,0,.18)';
+  for (let dy = -r; dy <= r; dy++) { const hw = Math.round(Math.sqrt(r * r - dy * dy)); ctx.fillRect(cx - hw, cy + dy, Math.max(0, Math.round(hw * .5)), 1); }
+}
+
+function drawMountains() {
+  ctx.fillStyle = theme('mount');
+  const off = (farX * .3) % MT_W;
+  for (let i = 0; i < mountains.length * 2; i++) {
+    const x = Math.round(i * 8 - off);
+    if (x > W || x < -8) continue;
+    const h = mountains[i % mountains.length];
+    ctx.fillRect(x, GY - h, 8, h);
+  }
+  ctx.fillStyle = themeA('moon', .08);
+  for (let i = 0; i < mountains.length * 2; i++) {
+    const x = Math.round(i * 8 - off);
+    if (x > W || x < -8) continue;
+    ctx.fillRect(x, GY - mountains[i % mountains.length], 8, 2);
+  }
+}
+
+function drawRuins() {
+  const off = farX % RUIN_W;
+  for (let rep = 0; rep < 2; rep++) for (const r of ruins) {
+    const x = Math.round(r.x - off + rep * RUIN_W);
+    if (x > W + 10 || x + r.w < -10) continue;
+    const top = GY - r.h;
+    ctx.fillStyle = theme('ruin');
+    if (r.kind === 'arch') {
+      ctx.fillRect(x, top, 18, r.h);
+      ctx.fillRect(x + r.w - 18, top, 18, r.h);
+      ctx.fillRect(x, top, r.w, 16);
+      for (let i = 0; i < 4; i++) { ctx.fillRect(x + 18, top + 16 + i * 4, 10 - i * 2, 4); ctx.fillRect(x + r.w - 28 + i * 2, top + 16 + i * 4, 10 - i * 2, 4); }
+      for (let i = 0; i < r.w; i += 10) ctx.fillRect(x + i, top - 5, 6, 5);
+    } else {
+      ctx.fillRect(x, top, r.w, r.h);
+      if (r.kind === 'tower') { for (let i = 0; i < r.w; i += 8) ctx.fillRect(x + i, top - 6, 5, 6); ctx.fillRect(x - 3, top + 4, r.w + 6, 4); }
+      else { for (let i = 0; i < r.w; i += 4) ctx.fillRect(x + i, top - ((i * 7 + r.x) % 13), 4, 14); }
+    }
+    // brick courses
+    ctx.fillStyle = theme('ruinDark');
+    for (let yy = top + 12; yy < GY - 2; yy += 10) {
+      if (r.kind === 'arch') { ctx.fillRect(x, yy, 18, 1); ctx.fillRect(x + r.w - 18, yy, 18, 1); }
+      else ctx.fillRect(x, yy, r.w, 1);
+    }
+    // moonlit rim on the right edge
+    ctx.fillStyle = themeA('moon', .07);
+    ctx.fillRect(x + r.w - 2, top, 2, r.h);
+    // glowing arched window
+    if (r.win) {
+      const wx = x + Math.round(r.w / 2) - 3, wy = top + 22;
+      ctx.fillStyle = themeA('glow', .35);
+      ctx.fillRect(wx + 1, wy, 4, 1); ctx.fillRect(wx, wy + 1, 6, 13);
+      glowAt(wx + 3, wy + 7, 14, 'glow', .12);
+    }
+    // spirit torch
+    if (r.torch) {
+      const tx = r.kind === 'arch' ? x + 8 : x + Math.round(r.w / 2), ty = r.kind === 'arch' ? top + 34 : top + 52;
+      ctx.fillStyle = '#05040a'; ctx.fillRect(tx - 2, ty, 4, 6); ctx.fillRect(tx - 1, ty + 6, 2, 6);
+      const fl = Math.sin(t * .35 + x) * 1.5;
+      glowAt(tx, ty - 4, 30 + fl * 2, 'glow', .28);
+      ctx.fillStyle = theme('glow');
+      ctx.fillRect(tx - 2, ty - 4, 4, 4); ctx.fillRect(tx - 1, Math.round(ty - 8 - fl), 2, 5);
+      ctx.fillStyle = '#e9fffb'; ctx.fillRect(tx - 1, ty - 3, 2, 2);
+    }
+  }
+}
+
+function drawFog() {
+  for (let i = 0; i < 3; i++) {
+    const y = GY - 14 - i * 11, sp = .5 + i * .25;
+    const off = ((farX * sp * 2 + t * (.3 + i * .1)) % 320 + 320) % 320;
+    ctx.fillStyle = themeA('fog', .045 + i * .01);
+    for (let x = -off; x < W; x += 320) {
+      ctx.fillRect(Math.round(x), y, 200, 5);
+      ctx.fillRect(Math.round(x + 20), y - 3, 150, 3);
+      ctx.fillRect(Math.round(x + 40), y + 5, 120, 3);
+    }
+  }
+}
+
+function drawGround() {
+  ctx.fillStyle = theme('stone'); ctx.fillRect(0, GY, W, H - GY);
+  ctx.fillStyle = theme('stoneDark');
+  for (let row = 0; row < 4; row++) {
+    const y = GY + 4 + row * 9;
+    ctx.fillRect(0, y, W, 1);
+    const shift = (row % 2) * 16;
+    for (let bx = -(((groundX + shift) % 32) + 32) % 32; bx < W; bx += 32) ctx.fillRect(Math.round(bx), y + 1, 1, 8);
+  }
+  ctx.fillStyle = theme('ground'); ctx.fillRect(0, GY, W, 3);
+  ctx.fillStyle = themeA('glow', .18); ctx.fillRect(0, GY, W, 1);
+  ctx.fillStyle = theme('ground');
+  for (const p of pebbles) {
+    const x = (((p.x - groundX) % W) + W) % W;
+    if (p.y < GY + 12) ctx.fillRect(Math.round(x), GY - 2, p.w, 2);
+  }
+  const fade = ctx.createLinearGradient(0, GY, 0, H);
+  fade.addColorStop(0, 'rgba(0,0,0,0)'); fade.addColorStop(1, 'rgba(0,0,0,.55)');
+  ctx.fillStyle = fade; ctx.fillRect(0, GY + 3, W, H - GY);
+}
+
+function drawEmbers() {
+  for (const m of motes) {
+    ctx.globalAlpha = .25 + .35 * Math.sin(t * .06 + m.p);
+    ctx.fillStyle = m.p > 3 ? theme('glow') : theme('accent');
+    ctx.fillRect(Math.round(m.x), Math.round(m.y), m.s > .5 ? 2 : 1, m.s > .5 ? 2 : 1);
+  }
+  ctx.globalAlpha = 1;
+}
+
+const OUTLINE = '#05040a';
+
+const TIER_PAL = [
+  { h:'#2a1c14', H:'#5a4030', s:'#c98e66', S:'#a06e4c', g:'#141414', G:'#8fa0b0', B:'#2b1d15', J:'#3d2c23', j:'#5a4334', T:'#1c1a1c', v:'#9acb4a', R:'#b3241b', r:'#7a1812', a:'#8a5a2e', p:'#7a5230', q:'#5a3b22', b:'#b5743a', c:'#4a2e1a' },
+  { h:'#2a1c14', H:'#6a4a36', s:'#c98e66', S:'#a06e4c', g:'#141414', G:'#cfe8ff', B:'#2b1d15', J:'#3d2c23', j:'#c9a24a', T:'#1c1a1c', v:'#b6f05a', R:'#e0302a', r:'#9a1d16', a:'#c9a24a', p:'#7a5230', q:'#5a3b22', b:'#c88544', c:'#4a2e1a' },
+  { h:'#1f140e', H:'#ffd36b', s:'#d49a70', S:'#a87450', g:'#141414', G:'#ffd36b', B:'#24180f', J:'#2a1e18', j:'#ffd36b', T:'#141214', v:'#d4ff6a', R:'#ff3b2e', r:'#c0241a', a:'#ffd36b', p:'#6e4828', q:'#4e321c', b:'#ffb85c', c:'#4a2e1a' },
+];
+const tier = () => level >= 6 ? 2 : level >= 3 ? 1 : 0;
+const OWL_PAL = { o:'#8a6a46', w:'#6b4f33', Y:'#ffcc33', '^':'#d9a441', k:'#e0b060', R:'#c8261c' };
+
+function heroRows() {
+  if (state === 'over' || !hero.ground) return JUMP;
+  if (hero.duck) return DUCK;
+  if (state === 'start') return RUN1;
+  return Math.floor(hero.anim) % 2 ? RUN1 : RUN2;
+}
+
+function drawHero() {
+  const dead = state === 'over';
+  const tr = tier();
+  const pal = TIER_PAL[tr];
+  // ground shadow
+  const lift = Math.min(1, (GY - HERO_H - hero.y) / 110);
+  const sw = Math.round(28 * (1 - lift * .55));
+  ctx.fillStyle = 'rgba(0,0,0,.5)';
+  ctx.fillRect(Math.round(hero.x + 20 - sw / 2), GY - 1, sw, 3);
+  ctx.fillRect(Math.round(hero.x + 20 - sw / 2) + 3, GY + 2, sw - 6, 1);
+
+  const rows = heroRows();
+  const x = hero.x;
+  let y = rows === DUCK ? GY - DUCK_H : hero.y;
+  if (state === 'start' && Math.sin(t * .06) > .7) y += 1;
+
+  // afterimages once awakened
+  if (tr === 2 && !dead) {
+    hero.trail.forEach((g, i) => {
+      ctx.globalAlpha = .12 + i * .05;
+      sprite(g.rows, g.x - (hero.trail.length - i) * 7, g.y, GHOST_PAL, 2);
+    });
+    ctx.globalAlpha = 1;
+  }
+  if (!dead) {
+    if (tr === 2) glowAt(x + 20, y + 24, 44, 'gold', .22);
+    else if (tr === 1) glowAt(x + 10, y + 28, 30, 'cape', .14);
+  }
+  // blink while invulnerable
+  if (hero.inv > 0 && Math.floor(hero.inv / 4) % 2) ctx.globalAlpha = .45;
+  sprite(rows, x, y, pal, 2, OUTLINE);
+  ctx.globalAlpha = 1;
+
+  // sunglasses glint sweeping across the lens
+  if (!dead) {
+    const gx = rows === DUCK ? x + 30 : x + 22, gy = rows === DUCK ? y + 8 : y + 10;
+    const ph = (t * (tr === 2 ? .09 : .05)) % 6;
+    if (ph < 1.2) { ctx.fillStyle = tr === 2 ? '#ffe9a8' : '#ffffff'; ctx.fillRect(Math.round(gx + ph * 6), gy, 2, 2); }
+    if (tr === 2) glowAt(gx + 6, gy + 1, 10, 'gold', .5);
+  }
+  drawStaff(rows === DUCK ? x + 34 : x + 34, rows === DUCK ? y + 14 : y + 26);
+}
+
+const GHOST_PAL = (() => { const p = {}; 'hHsSgGBJjTvRrapqbc'.split('').forEach(k => p[k] = '#ffd36b'); return p; })();
+
+function drawOwl() {
+  if (!owl) return;
+  const flap = Math.floor(t / 6) % 2;
+  glowAt(owl.x + 9, owl.y + 8, 14, 'gold', tier() >= 1 ? .25 : .08);
+  sprite(flap ? OWL1 : OWL2, owl.x, owl.y, OWL_PAL, 2, OUTLINE);
+}
+
+function drawStaff(hx, hy) {
+  const w = weapon();
+  const swinging = slashT > 0 && state === 'run';
+  const p = swinging ? 1 - slashT / 12 : 0;
+  const ang = swinging ? -1.5 + p * 2.3 : -1.15;      // resting: tip forward-up like a walking staff
+  const len = w.len + 12 + Math.max(0, Math.min(level, 10) - 6);
+  const back = 12;
+  const cx = Math.cos(ang), cy = Math.sin(ang);
+  const px = i => Math.round(hx + cx * i), py = i => Math.round(hy + cy * i);
+  ctx.fillStyle = OUTLINE;
+  for (let i = -back; i <= len; i++) ctx.fillRect(px(i) - 2, py(i) - 2, 4, 4);
+  for (let i = -back; i <= len; i++) { ctx.fillStyle = (i % 6 === 0 || i % 6 === 1) && i > -back + 2 ? w.blade : (i % 2 ? '#6e4224' : '#8a5530'); ctx.fillRect(px(i) - 1, py(i) - 1, 2, 2); }
+  // carved knob / glowing orb at the tip
+  const tx = hx + cx * (len + 2), ty = hy + cy * (len + 2);
+  if (w.glow && state !== 'over') {
+    const g = ctx.createRadialGradient(tx, ty, 0, tx, ty, 14);
+    g.addColorStop(0, w.blade); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.globalAlpha = .55; ctx.fillStyle = g; ctx.fillRect(tx - 14, ty - 14, 28, 28); ctx.globalAlpha = 1;
+  }
+  ctx.fillStyle = OUTLINE; ctx.fillRect(Math.round(tx) - 3, Math.round(ty) - 3, 6, 6);
+  ctx.fillStyle = level >= 3 ? w.blade : '#9a6236'; ctx.fillRect(Math.round(tx) - 2, Math.round(ty) - 2, 4, 4);
+  ctx.fillStyle = w.edge; ctx.fillRect(Math.round(tx) - 1, Math.round(ty) - 2, 1, 1);
+  // swing arc
+  if (swinging) {
+    const R = slashRange() * .78, ox = hx - 2, oy = hy - 6;
+    const a0 = -1.45, a1 = a0 + 2.3 * Math.min(1, p * 1.6);
+    ctx.globalAlpha = Math.min(1, slashT / 6);
+    for (let a = a0; a <= a1; a += .07) {
+      const fade = (a - a0) / (a1 - a0 + .001);
+      ctx.fillStyle = w.blade;
+      ctx.fillRect(Math.round(ox + Math.cos(a) * R) - 2, Math.round(oy + Math.sin(a) * R) - 2, 4, 3 + Math.round(fade * 2));
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(Math.round(ox + Math.cos(a) * (R - 3)) - 1, Math.round(oy + Math.sin(a) * (R - 3)) - 1, 2, 2);
+    }
+    ctx.globalAlpha = 1;
+  }
+}
+
+function drawWaves() {
+  const w = weapon();
+  for (const v of waves) {
+    const g = ctx.createRadialGradient(v.x, v.y + 30, 0, v.x, v.y + 30, 34);
+    g.addColorStop(0, w.blade); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.globalAlpha = .35; ctx.fillStyle = g; ctx.fillRect(v.x - 34, v.y - 4, 68, 68); ctx.globalAlpha = 1;
+    for (let a = -1.15; a <= 1.15; a += .09) {
+      const th = Math.round(4 * Math.cos(a)) + 1;
+      ctx.fillStyle = w.blade;
+      ctx.fillRect(Math.round(v.x + Math.cos(a) * 16) - th, Math.round(v.y + 30 + Math.sin(a) * 30), th + 2, 3);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(Math.round(v.x + Math.cos(a) * 16), Math.round(v.y + 30 + Math.sin(a) * 30), 2, 2);
+    }
+  }
+}
+
+function drawObstacles() {
+  for (const o of obstacles) {
+    if (o.type === 'crystal') {
+      glowAt(o.x + o.w / 2, o.y + 14, 22 + o.n * 6, 'accent', .35);
+      const pal = { X: theme('accent'), h: '#efeaff' };
+      for (let i = 0; i < o.n; i++) sprite(CRYSTAL, o.x + i * 16, o.y, pal, 2, OUTLINE);
+    } else if (o.type === 'ghoul') {
+      const y = o.y + (Math.floor(o.anim / 8) % 2);
+      sprite(GHOUL, o.x, y, { X: '#7a6f8f', '#': '#ff4d6d', o: '#2b2440' }, 2, OUTLINE);
+      ctx.fillStyle = 'rgba(255,77,109,.35)'; ctx.fillRect(Math.round(o.x + 2), Math.round(y + 3), 16, 3);
+    } else {
+      sprite(Math.floor(o.anim / 7) % 2 ? BAT1 : BAT2, o.x, o.y, { X: '#8e86a8', '#': '#ff4d6d' }, 2, OUTLINE);
+    }
+  }
+}
+
+function drawSouls() {
+  for (const s of souls) {
+    const bob = Math.sin(s.anim * .1) * 3;
+    glowAt(s.x + 5, s.y + 7 + bob, 16, 'glow', .45);
+    sprite(Math.floor(s.anim / 6) % 2 ? SOUL1 : SOUL2, s.x, s.y + bob, { X: theme('glow'), o: '#effcff' });
+  }
+}
+
+function drawKnights() {
+  for (const k of knights) {
+    const s = 2.4, y = GY - 12 * s;
+    glowAt(k.x + 32, y + 14, 46, 'gold', .22);
+    sprite(Math.floor(k.anim / 4) % 2 ? PANTHER1 : PANTHER2, k.x, y, { k: '#1d1b22', Y: '#ffcc33', R: '#e0302a', g: '#ffcc33' }, s, '#8a8299');
+  }
+}
+
+function drawParticles() {
+  for (const p of particles) {
+    ctx.globalAlpha = p.fade ? Math.max(0, 1 - p.life / p.max) * .8 : Math.max(0, 1 - p.life / p.max);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawHUD() {
+  const dim = '#8a83b0', lit = '#eeeaff';
+  text('HI ' + pad(hi), W - 120, 12, dim, 10, 'right');
+  text(pad(score), W - 14, 12, lit, 10, 'right');
+  glowAt(19, 16, 12, 'glow', .4);
+  sprite(SOUL1, 14, 10, { X: theme('glow'), o: '#effcff' }, 2);
+  text('x' + soulCount, 30, 12, lit, 10);
+  if (state !== 'start') {
+    const w = weapon();
+    text('LV ' + level, 14, 32, w.blade, 8);
+    const bx = 62, by = 33, bw = 90;
+    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(bx - 1, by - 1, bw + 2, 8);
+    ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(bx, by, bw, 6);
+    ctx.fillStyle = w.blade; ctx.fillRect(bx, by, Math.round(bw * Math.min(1, xp / xpNeed())), 6);
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(bx, by, Math.round(bw * Math.min(1, xp / xpNeed())), 1);
+    text(w.name, bx + bw + 8, 33, '#8a83b0', 6);
+  }
+  if (soulCount >= 3 && state === 'run' && Math.floor(t / 20) % 2) text('[A] SUMMON', 66, 12, '#ffd36b', 10, 'left', '#ffd36b');
+}
+
+function drawOverlay() {
+  if (state === 'start') {
+    ctx.fillStyle = 'rgba(5,4,10,.35)'; ctx.fillRect(0, 0, W, H);
+    text('SHADOW RUN', W / 2, 48, '#eeeaff', 26, 'center', theme('glow'));
+    text('RISE FROM THE WEAKEST', W / 2, 88, theme('glow'), 8, 'center');
+    if (Math.floor(t / 30) % 2) text('PRESS SPACE OR TAP TO START', W / 2, 124, '#eeeaff', 10, 'center');
+  }
+  if (state === 'over') {
+    ctx.fillStyle = 'rgba(5,4,10,.45)'; ctx.fillRect(0, 0, W, H);
+    text('GAME OVER', W / 2, 58, '#ff3b5c', 22, 'center', '#ff3b5c');
+    text('SCORE ' + pad(score) + (Math.floor(score) >= hi && hi > 0 ? '  NEW BEST!' : ''), W / 2, 96, '#eeeaff', 10, 'center');
+    text('REACHED LV ' + level + '  ' + weapon().name, W / 2, 112, weapon().blade, 7, 'center');
+    if (performance.now() - overAt > 450 && Math.floor(t / 30) % 2) text('SPACE / TAP TO RISE AGAIN', W / 2, 134, theme('glow'), 10, 'center');
+  }
+  if (bannerT > 0 && state === 'run') {
+    ctx.globalAlpha = Math.min(1, bannerT / 20);
+    const red = bannerText.startsWith('DUNGEON');
+    const lvl = bannerText.startsWith('LEVEL');
+    const bc = red ? '#ff3b5c' : lvl ? weapon().blade : theme('glow');
+    text(bannerText, W / 2, 62, bc, 14, 'center', bc);
+    if (bannerSub) text(bannerSub, W / 2, 86, '#eeeaff', 7, 'center');
+    ctx.globalAlpha = 1;
+  }
+}
+
+function draw() {
+  ctx.save();
+  if (shake > 0) ctx.translate(Math.round(rand(-1, 1) * shake * .5), Math.round(rand(-1, 1) * shake * .5));
+  drawSky();
+  drawMountains();
+  drawRuins();
+  drawFog();
+  drawEmbers();
+  drawGround();
+  drawSouls();
+  drawObstacles();
+  drawKnights();
+  drawWaves();
+  drawParticles();
+  drawOwl();
+  drawHero();
+  ctx.restore();
+
+  if (bolt > 0) { ctx.globalAlpha = bolt / 10 * .35; ctx.fillStyle = '#ffd0d6'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+  if (flash > 0) { ctx.globalAlpha = flash * .4; ctx.fillStyle = '#3ff0d0'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+  ctx.fillStyle = vignette; ctx.fillRect(0, 0, W, H);
+  drawHUD();
+  drawOverlay();
+  ctx.fillStyle = scanlines; ctx.fillRect(0, 0, W, H);
+}
+
+/* ---------- loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(50, now - last); last = now;
+  const ts = slowT > 0 ? .3 : 1;
+  if (slowT > 0) slowT -= dt / 16.667;
+  update(dt / 16.667 * ts);
+  draw();
+  requestAnimationFrame(loop);
+}
+(document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(loop));
+
+/* ---------- input ---------- */
+window.addEventListener('keydown', e => {
+  const k = e.code;
+  if (k === 'Space' || k === 'ArrowUp' || k === 'KeyW') { e.preventDefault(); if (!e.repeat) jump(); }
+  else if (k === 'ArrowDown' || k === 'KeyS') { e.preventDefault(); input.duck = true; }
+  else if (k === 'KeyA' || k === 'KeyX' || k === 'KeyE') { if (!e.repeat) arise(); }
+  else if (k === 'KeyF' || k === 'KeyJ' || k === 'KeyK' || k === 'Enter') { e.preventDefault(); if (!e.repeat) slash(); }
+});
+window.addEventListener('keyup', e => {
+  if (e.code === 'ArrowDown' || e.code === 'KeyS') input.duck = false;
+});
+cvs.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });
+
+const bJump = document.getElementById('bJump'), bDuck = document.getElementById('bDuck'), bArise = document.getElementById('bArise');
+bJump.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });
+bArise.addEventListener('pointerdown', e => { e.preventDefault(); arise(); });
+document.getElementById('bSlash').addEventListener('pointerdown', e => { e.preventDefault(); slash(); });
+bDuck.addEventListener('pointerdown', e => { e.preventDefault(); input.duck = true; bDuck.classList.add('on'); });
+['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => bDuck.addEventListener(ev, () => { input.duck = false; bDuck.classList.remove('on'); }));
+
+const muteBtn = document.getElementById('mute');
+muteBtn.addEventListener('click', () => { muted = !muted; muteBtn.textContent = 'SOUND: ' + (muted ? 'OFF' : 'ON'); muteBtn.blur(); });
+})();
+</script>
+</body>
+</html>
