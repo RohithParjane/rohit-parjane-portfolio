@@ -1610,6 +1610,11 @@ body{overflow-x:clip;max-width:100%}html:has(body.po){overflow:hidden!important}
 
 @media(min-width:901px){#p-resume .rsp{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.4vw,36px);max-width:1400px;margin:0 auto clamp(30px,4vw,56px);align-items:start}
 #p-resume .rsp .sheet{width:100%;margin:0}}
+
+/* footer melts into the page */
+.pg .ftr::before{content:"";position:absolute;left:0;right:0;top:-1px;height:clamp(180px,34%,320px);z-index:4;pointer-events:none;background:linear-gradient(180deg,var(--fb) 0,rgba(var(--fbr,14,12,36),.82) 22%,rgba(var(--fbr,14,12,36),.45) 55%,rgba(var(--fbr,14,12,36),0) 100%)}
+.pg .ftr .ftr-in,.pg .ftr .fs-bar,.pg .ftr .exp-in{position:relative;z-index:6}
+.ftr .fi{transition-duration:1.4s!important}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#about">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#play">Playground</a><a href="#contact">Contact</a></nav>
