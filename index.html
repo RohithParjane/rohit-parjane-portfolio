@@ -2098,7 +2098,7 @@ var EM=['📸','🌴','⛰️','☕','🌊','🧭','✈️','🌅','🎒','🛕'
   var ids=g[2].slice(),pc=0,cnt=0;
   while(ids.length){var i=ids.shift(),r=(R()*7-3.5).toFixed(2),y,w,s='';cnt++;
    if(LS.indexOf(i)>-1){
-    if(R()<.55){w=Math.round(h*(mob?.72:.8));y=Math.round((R()<.5?-1:1)*h*(.04+R()*.07));s='<div class="mbi" style="--y:'+y+'px">'+pol(i,w,(r*.6).toFixed(2),'<span class="mbpin" style="left:14%"></span><span class="mbpin" style="left:86%"></span>','',' mbl')+'</div>'}
+    if(R()<.55||i===73||i===85){w=Math.round(h*(mob?.72:.8));y=Math.round((R()<.5?-1:1)*h*(.04+R()*.07));s='<div class="mbi" style="--y:'+y+'px">'+pol(i,w,(r*.6).toFixed(2),'<span class="mbpin" style="left:14%"></span><span class="mbpin" style="left:86%"></span>','',' mbl')+'</div>'}
     else{w=Math.round(h*(mob?.42:.46));y=Math.round((R()<.5?-1:1)*h*(.1+R()*.07));s='<div class="mbi" style="--y:'+y+'px"><div class="mbr mbtn" style="--r:'+r+'deg;--w:'+w+'px">'+img(i)+'<span class="mbtape c"></span>'+tag(i)+'</div></div>'}
    }else{var k=pc++%3,j=-1;
     if(k===2){for(var q=0;q<ids.length;q++)if(LS.indexOf(ids[q])<0){j=ids.splice(q,1)[0];break}}
