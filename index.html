@@ -1560,7 +1560,7 @@ body.bdon .lhl,body.bdon .lhd,body.bdon #up,body.bdon .mood{visibility:hidden}
 .pl-trail{display:none!important}
 
 /* mobile: no sideways page wobble */
-html,body{overflow-x:clip;max-width:100%}
+body{overflow-x:clip;max-width:100%}html:has(body.po){overflow:hidden!important}
 .pg{overflow-x:hidden!important;overscroll-behavior-x:none}
 .ftr,.mbw,.phs,.pfs,.exp-merge{max-width:100vw}
 @media(max-width:700px){
