@@ -1485,6 +1485,14 @@ body.po .mood{display:flex!important}
 .mbch i{display:block;font-style:normal;font-size:26px;line-height:1;margin-bottom:4px}
 .mbch b{font-size:25px!important;margin-bottom:3px}
 @media(max-width:700px){.mbch{width:112px!important;height:112px!important}.mbch b{font-size:21px!important}}
+
+.mbpin.r{background:radial-gradient(circle at 35% 30%,#ffd0c4 0,#e8563f 25%,#a8251a 60%,#5e100a 100%)}
+.mbpin.t{background:radial-gradient(circle at 35% 30%,#d4fbf6 0,#3fbfb0 25%,#16786e 60%,#0a3d38 100%)}
+.mbpin.w{background:radial-gradient(circle at 35% 30%,#fff 0,#f3eee4 30%,#c9c0ad 70%,#8a8070 100%)}
+.mbpin.clip{width:15px;height:44px;margin-left:-7px;top:-20px;border-radius:9px;background:none;border:2.5px solid #cfd3da;box-shadow:0 2px 3px rgba(0,0,0,.45);transform:rotate(-8deg)}
+.mbpin.clip::after{content:"";position:absolute;left:2px;top:7px;width:6px;height:27px;border:2.5px solid #cfd3da;border-top:0;border-radius:0 0 6px 6px}
+.mbpin.bind{width:38px;height:17px;margin-left:-19px;top:-8px;border-radius:3px 3px 7px 7px;background:linear-gradient(#3a3226,#15110b);box-shadow:0 3px 5px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15)}
+.mbpin.bind::before{content:"";position:absolute;left:5px;right:5px;top:-14px;height:16px;border:2.5px solid #d6ab60;border-bottom:0;border-radius:6px 6px 0 0}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#about">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#play">Playground</a><a href="#contact">Contact</a></nav>
@@ -2077,7 +2085,8 @@ var EM=['📸','🌴','⛰️','☕','🌊','🧭','✈️','🌅','🎒','🛕'
  function tag(i){return '<span class="mbtag" style="--tr:'+(R()*8-4).toFixed(1)+'deg">'+CAP[i-1]+'</span>'}
  function tape(c){return '<span class="mbtape'+(c||'')+'" style="--tr:'+(R()*8-4).toFixed(1)+'deg"></span>'}
  function pol(i,w,r,extra,st,cl){return '<figure class="mbr mbp'+(cl||'')+'" style="--r:'+r+'deg;--w:'+w+'px;--pp:'+pp+'px;margin:0;'+(st||'')+'">'+img(i)+'<figcaption>'+CAP[i-1]+'</figcaption>'+extra+'</figure>'}
- function note(){var n=notes[ni++%notes.length];if(n[0]==='st')n=notes[ni++%notes.length];var y=Math.round((R()-.5)*h*.4),r=(R()*7-3.5).toFixed(2),w=Math.round(h*(n[0]==='tk'?.34:.4));
+ var CN=[["pc","postcard","mountains &gt;<br>everything"],["pc","postcard","wish you were<br>here, honestly."],["note","by the river","slow water,<br>slower mind"],["note","temple diaries","bells, flowers<br>&amp; a little peace"],["tk","admit one","golden hour","ON THE ROAD"],["note","note to self","look up.<br>always."],["note","night shift","stars &gt;<br>screens"],["note","café log","one more<br>coffee ☕"]];
+ function note(gi){var n=CN[gi],y=Math.round((R()-.5)*h*.4),r=(R()*7-3.5).toFixed(2),w=Math.round(h*(n[0]==='tk'?.34:.4));
   return '<div class="mbi" style="--y:'+y+'px"><div class="mbr" style="--r:'+r+'deg"><div class="mbn '+n[0]+'" style="--w:'+w+'px"><small>'+n[1]+'</small>'+n[2]+(n[3]?'<b>'+n[3]+'</b>':'')+'</div>'+(n[0]==='tk'?'':tape())+'</div></div>'}
  G.forEach(function(g,gi){
   html+='<div class="mbi" style="--y:'+Math.round((R()-.5)*h*.25)+'px"><div class="mbr" style="--r:'+(R()*16-8).toFixed(1)+'deg"><div class="mbst mbch"><span><i>'+g[1]+'</i><b>'+g[0]+'</b>chapter 0'+(gi+1)+'</span></div></div></div>';
@@ -2095,8 +2104,9 @@ var EM=['📸','🌴','⛰️','☕','🌊','🧭','✈️','🌅','🎒','🛕'
    }
    if(R()<.3)s=s.replace('class="mbi" style="','class="mbi" style="margin-left:-'+Math.round(h*(.04+R()*.06))+'px;z-index:'+(2+Math.floor(R()*3))+';');
    if(R()<.28)s+='<div class="mbi mbsp" style="--y:'+Math.round((R()-.5)*h*.7)+'px;--r:'+(R()*30-15).toFixed(0)+'deg" aria-hidden="true">'+pick(EM)+'</div>';
-   html+=s;if(cnt===5&&g[2].length>9)html+=note()}
+   html+=s;if(cnt===Math.min(5,Math.ceil(g[2].length/2)))html+=note(gi)}
  });
+ var PV=['',' t',' w',' clip',' bind',' r','',' t',' clip'],PL=['',' t',' r',' w'];html=html.replace(/<span class="mbpin"( style="[^"]*")?><\/span>(<span class="mbpin"( style="[^"]*")?><\/span>)?/g,function(m){var v=PV[Math.floor(R()*PV.length)];if(m.indexOf('left:14%')>-1)v=PL[Math.floor(R()*PL.length)];return m.replace(/class="mbpin"/g,'class="mbpin'+v+'"')});
  root.innerHTML='<div class="mbt"><div class="mbs">'+html+'</div><div class="mbs" aria-hidden="true">'+html+'</div></div>';
  track=root.firstChild;setW=track.firstChild.offsetWidth;
  var d='',amp=h*.3,per=Math.max(700,h*1.6),seg=Math.round(setW/per),pw=setW/seg,cy=h/2;d='M0 '+cy;
