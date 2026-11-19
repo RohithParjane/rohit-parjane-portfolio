@@ -1876,6 +1876,23 @@ clip-path:polygon(50% 0,62% 4%,74% 2%,82% 12%,94% 18%,96% 32%,100% 46%,95% 60%,9
 .gd-ring.tlx span{left:12px;transform:none}.gdl li>i.gdbg{display:grid;place-items:center}
 
 .gd-ring{border-radius:50%!important;overflow:visible}
+
+/* guide: compact + always fits the visible screen on phones */
+@media(max-width:700px){
+.gdp{width:min(360px,calc(100vw - 24px))!important;left:12px!important}
+.gdf{border-width:46px 20px 50px 20px!important;border-image-width:46px 20px 50px 20px!important;padding:0 4px!important}
+.gds{max-height:calc(100svh - var(--gdbb,64px) - 48px - 120px)!important;padding:0 2px 2px!important;margin:-10px 0 -6px!important}
+.gds h3{font-size:25px!important}
+.gdsub{font-size:11.5px!important;margin:3px 0 0!important}
+.gd-flo{height:10px;margin:2px 0 4px!important}
+.gdl li{grid-template-columns:30px 1fr auto!important;gap:8px!important;padding:7px 0!important}
+.gdl li>i.gdi{width:30px!important;height:30px!important}
+.gdl li>i.gdi img,.gdl li>i.gdi svg{width:19px!important;height:19px!important}
+.gdl b{font-size:13.5px!important}
+.gdl span{font-size:11.5px!important;line-height:1.3!important;margin-top:1px!important}
+.gdl button{font-size:9px!important;letter-spacing:.12em!important;border-width:2px 11px!important;border-image-width:2px 11px!important;padding:6px 1px!important}
+.gdx{width:28px!important;height:28px!important;font-size:11px!important}
+}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#my-story">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#playground">Playground</a><a href="#contact">Contact</a></nav>
