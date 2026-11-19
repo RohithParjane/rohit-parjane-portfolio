@@ -1641,6 +1641,9 @@ body{overflow-x:clip;max-width:100%}html:has(body.po){overflow:hidden!important}
 html,body{overscroll-behavior:none}
 .pg{overscroll-behavior-y:contain}
 .pfg,.mbx{overscroll-behavior-x:contain;touch-action:pan-x pan-y}
+
+.pfg,.pfg *,.mbx,.mbx *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.pfg img,.mbx img{-webkit-user-drag:none;pointer-events:none}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#my-story">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#playground">Playground</a><a href="#contact">Contact</a></nav>
