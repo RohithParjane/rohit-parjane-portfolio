@@ -1877,21 +1877,11 @@ clip-path:polygon(50% 0,62% 4%,74% 2%,82% 12%,94% 18%,96% 32%,100% 46%,95% 60%,9
 
 .gd-ring{border-radius:50%!important;overflow:visible}
 
-/* guide: compact + always fits the visible screen on phones */
+/* guide (mobile): normal sizes; list scrolls inside, ~3 items visible, header stays */
 @media(max-width:700px){
-.gdp{width:min(360px,calc(100vw - 24px))!important;left:12px!important}
-.gdf{border-width:46px 20px 50px 20px!important;border-image-width:46px 20px 50px 20px!important;padding:0 4px!important}
-.gds{max-height:calc(100svh - var(--gdbb,64px) - 48px - 120px)!important;padding:0 2px 2px!important;margin:-10px 0 -6px!important}
-.gds h3{font-size:25px!important}
-.gdsub{font-size:11.5px!important;margin:3px 0 0!important}
-.gd-flo{height:10px;margin:2px 0 4px!important}
-.gdl li{grid-template-columns:30px 1fr auto!important;gap:8px!important;padding:7px 0!important}
-.gdl li>i.gdi{width:30px!important;height:30px!important}
-.gdl li>i.gdi img,.gdl li>i.gdi svg{width:19px!important;height:19px!important}
-.gdl b{font-size:13.5px!important}
-.gdl span{font-size:11.5px!important;line-height:1.3!important;margin-top:1px!important}
-.gdl button{font-size:9px!important;letter-spacing:.12em!important;border-width:2px 11px!important;border-image-width:2px 11px!important;padding:6px 1px!important}
-.gdx{width:28px!important;height:28px!important;font-size:11px!important}
+.gdp{left:12px!important;bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;z-index:80!important}
+.gds{max-height:none!important;overflow:visible!important}
+.gdl{max-height:min(var(--gdl3,330px),calc(100svh - 300px - env(safe-area-inset-bottom,0px)));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-right:4px;scrollbar-width:thin;scrollbar-color:#8a5a1a transparent;-webkit-mask:linear-gradient(#000 calc(100% - 26px),transparent)}
 }
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
@@ -2601,7 +2591,7 @@ if(saved==='0')return;
 fetch('/api/geo',{cache:'no-store'}).then(function(r){return r.ok?r.json():{}}).catch(function(){return{}}).then(function(g){var eu=EU.indexOf((g&&g.country)||'')>-1;
  if(eu&&saved!=='1'){setTimeout(ask,6000);return}load();grant()})})();</script><script>(function(){[].forEach.call(document.querySelectorAll('.cstg'),function(t){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.disconnect();setTimeout(function(){t.classList.add('glow');t.addEventListener('animationend',function a(){t.classList.remove('glow');t.removeEventListener('animationend',a)})},500)}})},{threshold:.9});
 var pg=t.closest('.pg');if(pg)new MutationObserver(function(){if(!pg.classList.contains('on'))return;io.observe(t)}).observe(pg,{attributes:true,attributeFilter:['class']});io.observe(t)})})();</script><script>(function(){var b=document.getElementById('gdb'),p=document.getElementById('gdp'),ring=document.getElementById('gdring');if(!b)return;
-function open(){p.hidden=false;p.style.setProperty('--gh',(p.querySelector('.gds').offsetHeight)+'px');b.setAttribute('aria-expanded','true');b.classList.remove('hint');requestAnimationFrame(function(){p.classList.add('on')});try{localStorage.setItem('rp_gd_seen','1')}catch(e){}if(window.clarity)clarity('event','guide_open');setTimeout(function(){p.querySelector('.gdx').focus()},80)}
+function open(){p.hidden=false;setTimeout(function(){var L=p.querySelectorAll('.gdl li');if(L.length>3){var t=L[0].offsetTop,e=L[2].offsetTop+L[2].offsetHeight;p.querySelector('.gdl').style.setProperty('--gdl3',(e-t+28)+'px')}},30);p.style.setProperty('--gh',(p.querySelector('.gds').offsetHeight)+'px');b.setAttribute('aria-expanded','true');b.classList.remove('hint');requestAnimationFrame(function(){p.classList.add('on')});try{localStorage.setItem('rp_gd_seen','1')}catch(e){}if(window.clarity)clarity('event','guide_open');setTimeout(function(){p.querySelector('.gdx').focus()},80)}
 function close(){p.classList.remove('on');b.setAttribute('aria-expanded','false');setTimeout(function(){if(!p.classList.contains('on'))p.hidden=true},300)}
 b.onclick=function(){p.classList.contains('on')?close():open()};p.querySelector('.gdx').onclick=function(){close();b.focus()};
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&p.classList.contains('on'))close()});
