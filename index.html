@@ -1848,8 +1848,9 @@ clip-path:polygon(50% 0,62% 4%,74% 2%,82% 12%,94% 18%,96% 32%,100% 46%,95% 60%,9
 @media(max-width:700px){.gdp{left:12px!important;width:calc(100vw - 24px)!important}}
 .gscr[aria-expanded="true"]{opacity:1!important;pointer-events:auto!important}
 .dyp-ic .dyp-icimg{width:94%;height:94%;max-width:none;object-fit:contain;display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
-.dyb .dyb-q{width:28px!important;height:28px!important;object-fit:contain;transform:rotate(0deg)!important;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}.dyb:hover .dyb-q{transform:rotate(-10deg) translateY(-1px)!important}
+.dyb .dyb-q{width:26px!important;height:26px!important;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 .fq{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45))}
+.pl-fly .fq{transform:scale(1.55)}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#my-story">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#playground">Playground</a><a href="#contact">Contact</a></nav>
@@ -2431,7 +2432,7 @@ function fly(){b.classList.remove('in');
  var pe=document.createElementNS(ns,'path');pe.setAttribute('d','M'+path.map(function(p){return p[0].toFixed(1)+' '+p[1].toFixed(1)}).join(' L'));tr.appendChild(pe);document.body.appendChild(tr);
  var len=pe.getTotalLength();
  var pl=document.createElement('div');pl.className='pl-fly';pl.innerHTML=PL;pl.style.width=S+'px';pl.style.height=S*.75+'px';document.body.appendChild(pl);
- var kf=path.map(function(p,i){var q=path[Math.min(n-1,i+1)],o=path[Math.max(0,i-1)],a=Math.atan2(q[1]-o[1],q[0]-o[0])*180/Math.PI;if(i===n-1)a=-8;return{transform:'translate('+(p[0]-S/2).toFixed(1)+'px,'+(p[1]-S*.375).toFixed(1)+'px) rotate('+(a+18).toFixed(1)+'deg) scale('+(i===n-1?.55:1)+')',offset:i/(n-1)}});
+ var kf=path.map(function(p,i){var q=path[Math.min(n-1,i+1)],o=path[Math.max(0,i-1)],a=Math.atan2(q[1]-o[1],q[0]-o[0])*180/Math.PI;if(i===n-1)a=-8;return{transform:'translate('+(p[0]-S/2).toFixed(1)+'px,'+(p[1]-S*.375).toFixed(1)+'px) rotate('+(a+45).toFixed(1)+'deg) scale('+(i===n-1?.55:1)+')',offset:i/(n-1)}});
  var dur=mob()?2600:3400;
  pl.animate(kf,{duration:dur,easing:'cubic-bezier(.45,.05,.4,1)',fill:'forwards'});
  pe.style.strokeDasharray=len;pe.style.strokeDashoffset=len;
