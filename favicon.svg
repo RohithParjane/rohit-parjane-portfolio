@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6dfa6"/><stop offset=".55" stop-color="#e3ad55"/><stop offset="1" stop-color="#a8741c"/></linearGradient>
-<linearGradient id="n" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2b55"/><stop offset="1" stop-color="#0b1230"/></linearGradient></defs>
-<path d="M19 2h26l17 17v26L45 62H19L2 45V19z" fill="url(#n)" stroke="url(#g)" stroke-width="3"/>
-<path d="M21 7h22l14 14v22L43 57H21L7 43V21z" fill="none" stroke="#e3ad55" stroke-opacity=".45" stroke-width="1.2"/>
-<text x="32" y="41.5" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="25" font-weight="700" fill="url(#g)" letter-spacing="-1">RP</text>
-</svg>
