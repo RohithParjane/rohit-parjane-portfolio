@@ -1897,6 +1897,19 @@ body.po #gdb,body.po #gdp{display:none!important}
 .gscr:hover{filter:drop-shadow(0 0 9px rgba(240,200,120,.6)) brightness(1.15)!important}
 @media(hover:none){.gscr .gs-tip{display:none!important}}
 body:not(.po) .dyb{right:calc(112px + env(safe-area-inset-right,0px))!important}
+
+/* unified icon hover: gold glow on the octagon + inner art tilts and grows (same as guide & guestbook) */
+#menuBtn img,.mood>button img,#up svg,.lgh,.fs-soc a>*,.soc a>*{transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+.lhl::before{transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+@media(hover:hover){
+#menuBtn:hover,.mood>button:hover,#lhl:hover,#up:hover,.dyb:hover,.soc a:hover,.fs-soc a:hover{transform:none!important;filter:drop-shadow(0 0 9px rgba(240,200,120,.6)) brightness(1.15)!important}
+#menuBtn:hover img,.mood>button:hover img,#up:hover svg,.soc a:hover>*,.fs-soc a:hover>*{transform:rotate(-8deg) scale(1.1)}
+#lhl:hover::before{transform:rotate(-8deg) scale(1.1)}
+#lg:hover .lgh{transform:rotate(-8deg) scale(1.1)}
+}
+#up{position:fixed}
+#up::after{content:"Back to top";position:absolute;right:-4px;bottom:calc(100% + 12px);box-sizing:border-box;white-space:nowrap;border-style:solid;border-color:transparent;border-width:3px 14px;border-image:var(--dbtn) 6 40 fill/3px 14px stretch;padding:7px 3px;color:#f1dfb4;font:600 10px/1 'Bricolage Grotesque',sans-serif;letter-spacing:.16em;text-transform:uppercase;filter:drop-shadow(0 4px 8px #0009);opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s;pointer-events:none}
+@media(hover:hover){#up:hover::after,#up:focus-visible::after{opacity:1;transform:none}}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#my-story">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#playground">Playground</a><a href="#contact">Contact</a></nav>
