@@ -1651,6 +1651,12 @@ html,body{overscroll-behavior:none}
 .pft{display:flex;gap:20px;width:max-content;will-change:transform}
 .pft>.pfc{flex:0 0 clamp(300px,30vw,400px);width:clamp(300px,30vw,400px)}
 @media(max-width:700px){.pft{gap:12px}.pft>.pfc{flex-basis:76vw;width:76vw}}
+
+/* toggle stays in place; glows twice when first seen */
+.cstg{position:relative!important;top:auto!important}
+.cstg.glow{animation:csglow 1.1s ease-in-out 2}
+@keyframes csglow{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.35);border-color:rgba(214,171,96,.6)}50%{box-shadow:0 0 0 3px rgba(240,200,120,.55),0 0 26px 6px rgba(240,200,120,.5);border-color:#f6dfa6}}
+@media(prefers-reduced-motion:reduce){.cstg.glow{animation:none}}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#my-story">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#playground">Playground</a><a href="#contact">Contact</a></nav>
@@ -2346,4 +2352,5 @@ function ask(){var b=document.createElement('div');b.className='ckb';b.setAttrib
 var saved=null;try{saved=localStorage.getItem('rp_ck')}catch(e){}
 if(saved==='0')return;
 fetch('/api/geo',{cache:'no-store'}).then(function(r){return r.ok?r.json():{}}).catch(function(){return{}}).then(function(g){var eu=EU.indexOf((g&&g.country)||'')>-1;
- if(eu&&saved!=='1'){setTimeout(ask,6000);return}load();grant()})})();</script></body></html>
+ if(eu&&saved!=='1'){setTimeout(ask,6000);return}load();grant()})})();</script><script>(function(){[].forEach.call(document.querySelectorAll('.cstg'),function(t){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.disconnect();setTimeout(function(){t.classList.add('glow');t.addEventListener('animationend',function a(){t.classList.remove('glow');t.removeEventListener('animationend',a)})},500)}})},{threshold:.9});
+var pg=t.closest('.pg');if(pg)new MutationObserver(function(){if(!pg.classList.contains('on'))return;io.observe(t)}).observe(pg,{attributes:true,attributeFilter:['class']});io.observe(t)})})();</script></body></html>
