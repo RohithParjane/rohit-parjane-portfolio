@@ -1637,6 +1637,10 @@ body{overflow-x:clip;max-width:100%}html:has(body.po){overflow:hidden!important}
 .ckb p{margin:0;flex:1 1 260px}.ckb div{display:flex;gap:8px}
 .ckb button{padding:9px 16px;border-radius:99px;border:1px solid #d6ab60;background:none;color:#f6dfa6;font:600 12px/1 'Bricolage Grotesque',sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 .ckb button[data-a="1"]{background:linear-gradient(120deg,#f6dfa6,#e3ad55);color:#1a1206;border-color:transparent}
+
+html,body{overscroll-behavior:none}
+.pg{overscroll-behavior-y:contain}
+.pfg,.mbx{overscroll-behavior-x:contain;touch-action:pan-x pan-y}
 </style></head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b></div></div>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#my-story">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#playground">Playground</a><a href="#contact">Contact</a></nav>
@@ -1977,17 +1981,17 @@ function tick(now){var dt=Math.min(64,now-t0);t0=now;
  requestAnimationFrame(tick)}
 requestAnimationFrame(tick);
 })();</script>
-<script>(function(){var g=document.querySelector('.pfg');if(!g)return;var orig=[].slice.call(g.children),setW=0,built=false,acc=0,last=0,hov=false,dn=false,mv=0,sx=0,sl=0,hold=0,SPEED=34,red=matchMedia('(prefers-reduced-motion:reduce)').matches;
+<script>(function(){var g=document.querySelector('.pfg');if(!g)return;var orig=[].slice.call(g.children),setW=0,built=false,acc=0,last=0,hov=false,dn=false,mv=0,sx=0,sl=0,hold=0,SPEED=34,self=0,touch=false,idleT=0,lastSc=0,red=matchMedia('(prefers-reduced-motion:reduce)').matches;
 function build(){var keep=setW?g.scrollLeft%setW:0;[].slice.call(g.querySelectorAll('[data-c]')).forEach(function(n){n.parentNode.removeChild(n)});var cw=orig[0].getBoundingClientRect().width;if(!cw||!g.clientWidth){built=false;return}
 var gap=parseFloat(getComputedStyle(g).columnGap)||0,one=orig.length*(cw+gap),reps=Math.max(1,Math.ceil((g.clientWidth+cw)/one));
-for(var r=1;r<reps*2;r++)orig.forEach(function(c){var k=c.cloneNode(true);k.setAttribute('data-c','');k.setAttribute('aria-hidden','true');g.appendChild(k)});setW=one*reps;built=true;g.scrollLeft=keep||1}
-function wrap(){if(!built||!setW)return;var s=g.scrollLeft,mx=g.scrollWidth-g.clientWidth;if(s>=setW)g.scrollLeft=s-setW;else if(s<1)g.scrollLeft=s+setW;else if(s>mx-2)g.scrollLeft=s-setW}
+var mult=matchMedia('(pointer:coarse)').matches?6:2;for(var r=1;r<reps*mult;r++)orig.forEach(function(c){var k=c.cloneNode(true);k.setAttribute('data-c','');k.setAttribute('aria-hidden','true');g.appendChild(k)});setW=one*reps;built=true;g.scrollLeft=keep||1}
+function wrap(){if(!built||!setW)return;if(touch||performance.now()-lastSc<160&&matchMedia('(pointer:coarse)').matches)return;var s=g.scrollLeft,mx=g.scrollWidth-g.clientWidth;if(s>=setW)g.scrollLeft=s-setW;else if(s<1)g.scrollLeft=s+setW;else if(s>mx-2)g.scrollLeft=s-setW}
 function tick(t){requestAnimationFrame(tick);var dt=Math.min(.05,(t-last)/1000||0);last=t;if(!g.clientWidth)return;if(!built){build();return}
-if(dn||hov||red||t<hold)return;acc+=SPEED*dt;if(acc>=1){var s=Math.floor(acc);acc-=s;g.scrollLeft+=s;wrap()}}
-g.addEventListener('scroll',wrap,{passive:true});
+if(dn||hov||red||touch||t<hold||t-lastSc<1800&&hold>0&&matchMedia('(pointer:coarse)').matches)return;acc+=SPEED*dt;if(acc>=1){var s=Math.floor(acc);acc-=s;self=1;g.scrollLeft+=s;wrap()}}
+g.addEventListener('scroll',function(){if(self){self=0;return}lastSc=performance.now();clearTimeout(idleT);idleT=setTimeout(function(){wrap()},180);if(!matchMedia('(pointer:coarse)').matches)wrap()},{passive:true});
 g.addEventListener('mouseenter',function(){hov=true});g.addEventListener('mouseleave',function(){hov=false});
-g.addEventListener('touchstart',function(){hold=1e15},{passive:true});
-function rel(){hold=performance.now()+1600}g.addEventListener('touchend',rel,{passive:true});g.addEventListener('touchcancel',rel,{passive:true});
+g.addEventListener('touchstart',function(){touch=true;hold=1e15},{passive:true});
+function rel(){touch=false;hold=performance.now()+2500}g.addEventListener('touchend',rel,{passive:true});g.addEventListener('touchcancel',rel,{passive:true});
 g.addEventListener('wheel',function(){hold=performance.now()+1200},{passive:true});
 g.addEventListener('mousedown',function(e){dn=true;mv=0;sx=e.pageX;sl=g.scrollLeft;e.preventDefault()});
 addEventListener('mousemove',function(e){if(!dn)return;var d=e.pageX-sx;if(Math.abs(d)>4){mv=1;g.classList.add('drag')}if(mv){g.scrollLeft=sl-d;if(g.scrollLeft>=setW){sl-=setW}else if(g.scrollLeft<1){sl+=setW}wrap()}});
