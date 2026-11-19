@@ -1978,10 +1978,10 @@ function tick(now){var dt=Math.min(64,now-t0);t0=now;
 requestAnimationFrame(tick);
 })();</script>
 <script>(function(){var g=document.querySelector('.pfg');if(!g)return;var orig=[].slice.call(g.children),setW=0,built=false,acc=0,last=0,hov=false,dn=false,mv=0,sx=0,sl=0,hold=0,SPEED=34,red=matchMedia('(prefers-reduced-motion:reduce)').matches;
-function build(){[].slice.call(g.querySelectorAll('[data-c]')).forEach(function(n){n.parentNode.removeChild(n)});var cw=orig[0].getBoundingClientRect().width;if(!cw||!g.clientWidth){built=false;return}
+function build(){var keep=setW?g.scrollLeft%setW:0;[].slice.call(g.querySelectorAll('[data-c]')).forEach(function(n){n.parentNode.removeChild(n)});var cw=orig[0].getBoundingClientRect().width;if(!cw||!g.clientWidth){built=false;return}
 var gap=parseFloat(getComputedStyle(g).columnGap)||0,one=orig.length*(cw+gap),reps=Math.max(1,Math.ceil((g.clientWidth+cw)/one));
-for(var r=1;r<reps*2;r++)orig.forEach(function(c){var k=c.cloneNode(true);k.setAttribute('data-c','');k.setAttribute('aria-hidden','true');g.appendChild(k)});setW=one*reps;built=true}
-function wrap(){if(!built)return;if(g.scrollLeft>=setW)g.scrollLeft-=setW;else if(g.scrollLeft<1)g.scrollLeft+=setW}
+for(var r=1;r<reps*2;r++)orig.forEach(function(c){var k=c.cloneNode(true);k.setAttribute('data-c','');k.setAttribute('aria-hidden','true');g.appendChild(k)});setW=one*reps;built=true;g.scrollLeft=keep||1}
+function wrap(){if(!built||!setW)return;var s=g.scrollLeft,mx=g.scrollWidth-g.clientWidth;if(s>=setW)g.scrollLeft=s-setW;else if(s<1)g.scrollLeft=s+setW;else if(s>mx-2)g.scrollLeft=s-setW}
 function tick(t){requestAnimationFrame(tick);var dt=Math.min(.05,(t-last)/1000||0);last=t;if(!g.clientWidth)return;if(!built){build();return}
 if(dn||hov||red||t<hold)return;acc+=SPEED*dt;if(acc>=1){var s=Math.floor(acc);acc-=s;g.scrollLeft+=s;wrap()}}
 g.addEventListener('scroll',wrap,{passive:true});
@@ -1992,7 +1992,7 @@ g.addEventListener('wheel',function(){hold=performance.now()+1200},{passive:true
 g.addEventListener('mousedown',function(e){dn=true;mv=0;sx=e.pageX;sl=g.scrollLeft;e.preventDefault()});
 addEventListener('mousemove',function(e){if(!dn)return;var d=e.pageX-sx;if(Math.abs(d)>4){mv=1;g.classList.add('drag')}if(mv){g.scrollLeft=sl-d;if(g.scrollLeft>=setW){sl-=setW}else if(g.scrollLeft<1){sl+=setW}wrap()}});
 addEventListener('mouseup',function(){if(!dn)return;dn=false;g.classList.remove('drag');hold=performance.now()+800});
-var rz;addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){built=false},200)});
+var rz,lw=innerWidth;addEventListener('resize',function(){if(innerWidth===lw)return;lw=innerWidth;clearTimeout(rz);rz=setTimeout(function(){built=false},200)});
 requestAnimationFrame(tick)})();</script>
 <script>(function(){var b=document.createElement('button');b.type='button';b.className='back gb';b.setAttribute('aria-label','Back');b.title='Back';b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>';b.onclick=function(){var x=document.querySelector('.pg.on .back');if(x)x.click()};document.body.appendChild(b)})();</script>
 <script>(function(){var lb=document.getElementById('plb');if(!lb)return;var im=lb.querySelector('img'),cp=lb.querySelector('p');function close(){lb.hidden=true;im.removeAttribute('src')}
