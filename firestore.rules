@@ -1,0 +1,98 @@
+rules_version = '2';
+// Security rules for Rohit's portfolio: visitor diary, ratings, views, resume downloads and the private insights page.
+// Paste into Firebase console > Firestore Database > Rules, then click Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner() {
+      return request.auth != null
+        && request.auth.token.email == 'rparjane@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+
+    // One summary document: total views, views per day, diary count, rating totals and resume downloads.
+    match /stats/main {
+      allow read: if true;
+
+      // First visitor, first signature or first download creates it with starting values only.
+      allow create: if isOwner() || (
+        request.resource.data.keys().hasOnly(['views', 'days', 'count', 'ratingCount', 'ratingSum', 'downloads', 'dlDays'])
+        && request.resource.data.get('views', 0) <= 1
+        && request.resource.data.get('count', 0) <= 1
+        && request.resource.data.get('ratingCount', 0) <= 1
+        && request.resource.data.get('ratingSum', 0) <= 5
+        && request.resource.data.get('downloads', 0) <= 1
+      );
+
+      allow update: if isOwner() || isOneView() || isOneSignature() || isOneDownload();
+
+      // A visit may only add exactly one view.
+      function isOneView() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'days'])
+          && request.resource.data.views == resource.data.get('views', 0) + 1;
+      }
+
+      // A signature may only add one entry and one rating of 1 to 5 stars.
+      function isOneSignature() {
+        let added = request.resource.data.ratingSum - resource.data.get('ratingSum', 0);
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count', 'ratingCount', 'ratingSum'])
+          && request.resource.data.count == resource.data.get('count', 0) + 1
+          && request.resource.data.ratingCount == resource.data.get('ratingCount', 0) + 1
+          && added >= 1 && added <= 5;
+      }
+
+      // A resume download may only add exactly one download.
+      function isOneDownload() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downloads', 'dlDays'])
+          && request.resource.data.downloads == resource.data.get('downloads', 0) + 1;
+      }
+    }
+
+    // Anonymous visit analytics: one document per visit with section time and approximate location.
+    // Visitors can only create their own visit and add time to it for a few hours; only Rohit can read.
+    match /visits/{visitId} {
+      function okSec(m, k) {
+        return !(k in m) || (m[k] is int && m[k] >= 0 && m[k] <= 10800);
+      }
+      function validSec(m) {
+        return m is map
+          && m.keys().hasOnly(['home', 'work', 'case1', 'case2', 'about', 'play', 'resume', 'contact'])
+          && okSec(m, 'home') && okSec(m, 'work') && okSec(m, 'case1') && okSec(m, 'case2')
+          && okSec(m, 'about') && okSec(m, 'play') && okSec(m, 'resume') && okSec(m, 'contact');
+      }
+      allow read, delete: if isOwner();
+      allow create: if request.resource.data.keys().hasOnly(['at', 'country', 'region', 'city', 'dev', 'sec'])
+        && request.resource.data.at == request.time
+        && request.resource.data.country is string && request.resource.data.country.size() <= 2
+        && request.resource.data.region is string && request.resource.data.region.size() <= 40
+        && request.resource.data.city is string && request.resource.data.city.size() <= 60
+        && request.resource.data.dev in ['mobile', 'desktop']
+        && validSec(request.resource.data.sec) && request.resource.data.sec.size() == 0;
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['sec'])
+        && validSec(request.resource.data.sec)
+        && request.time < resource.data.at + duration.value(4, 'h');
+    }
+
+    // Diary entries: anyone can read and add a valid one; only Rohit can edit (name/note) or delete.
+    match /entries/{entryId} {
+      allow read: if true;
+      allow create: if
+        request.resource.data.keys().hasOnly(['no', 'name', 'rating', 'note', 'at'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2 && request.resource.data.name.size() <= 40
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+        && request.resource.data.note is string && request.resource.data.note.size() <= 300
+        && request.resource.data.no is int
+        && request.resource.data.no == getAfter(/databases/$(database)/documents/stats/main).data.count
+        && request.resource.data.at == request.time;
+      // Only Rohit can fix a typo in a name or note; number, rating and date stay as signed.
+      allow update: if isOwner()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'note'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2 && request.resource.data.name.size() <= 40
+        && request.resource.data.note is string && request.resource.data.note.size() <= 300;
+      allow delete: if isOwner();
+    }
+  }
+}
