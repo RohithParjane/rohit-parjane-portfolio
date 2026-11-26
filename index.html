@@ -899,7 +899,7 @@ body.po{--bg:var(--fb);--fg:#f3efe8;--mut:#a9a5bb;--card:rgba(255,255,255,.09);-
 .pfc{position:relative;margin:0;min-height:320px;display:flex;flex-direction:column;gap:18px;background:var(--deco);padding:46px 36px 34px;filter:drop-shadow(0 10px 18px #0007);transition:transform .45s cubic-bezier(.2,.8,.3,1.2),filter .3s}
 .pfc:hover{transform:translateY(-6px);filter:drop-shadow(0 0 16px rgba(240,200,120,.35)) brightness(1.08)}
 .pfq{display:block;height:34px;font:400 92px/1 'Instrument Serif',Georgia,serif;color:#d6ab60;text-shadow:0 0 18px rgba(214,171,96,.35)}
-.pfc blockquote{margin:0;flex:1;font:italic 400 clamp(18px,1.55vw,22px)/1.45 'Instrument Serif',Georgia,serif;color:#f1e9d6;text-wrap:pretty}
+.pfc blockquote{margin:0;flex:1;font:italic 400 clamp(16.5px,1.3vw,19px)/1.5 'Instrument Serif',Georgia,serif;color:#f1e9d6;letter-spacing:.005em;text-wrap:pretty}
 .pfc figcaption{position:relative;display:flex;align-items:center;gap:14px;padding-top:24px}
 .pfc figcaption::before{content:"";position:absolute;left:0;right:0;top:0;height:7px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M4 0L8 4 4 8 0 4Z' fill='%23f1d9a0'/%3E%3C/svg%3E") 50% 50%/7px 7px no-repeat,linear-gradient(90deg,transparent,#d6ab60 16%,#d6ab60 calc(50% - 10px),transparent calc(50% - 10px),transparent calc(50% + 10px),#d6ab60 calc(50% + 10px),#d6ab60 84%,transparent) 50% 50%/100% 1px no-repeat;opacity:.8}
 .pfa{flex:none;width:60px;height:60px;display:grid;place-items:center;background:var(--dico) center/100% 100% no-repeat;filter:drop-shadow(0 3px 5px #0008)}
@@ -1566,7 +1566,7 @@ body{overflow-x:clip;max-width:100%}html:has(body.po){overflow:hidden!important}
 @media(max-width:700px){
  .pfg{grid-auto-columns:76vw!important;gap:12px!important;overscroll-behavior-x:contain}
  .pfc{min-height:0!important;padding:34px 22px 22px!important;gap:14px}
- .pfc blockquote{font-size:16.5px!important;line-height:1.42}
+ .pfc blockquote{font-size:16px!important;line-height:1.48}
  .mbx{overscroll-behavior-x:contain}
 }
 
