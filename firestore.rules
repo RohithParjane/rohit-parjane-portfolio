@@ -16,7 +16,7 @@ service cloud.firestore {
 
       // First visitor, signature, download or click creates it with starting values only.
       allow create: if isOwner() || (
-        request.resource.data.keys().hasOnly(['views', 'days', 'count', 'ratingCount', 'ratingSum', 'downloads', 'dlDays', 'clk_linkedin', 'clk_figma', 'clk_instagram', 'clk_mail', 'clk_whatsapp', 'clk_call', 'clk_sr', 'clk_bd', 'clk_oe'])
+        request.resource.data.keys().hasOnly(['views', 'days', 'count', 'ratingCount', 'ratingSum', 'downloads', 'dlDays', 'clk_linkedin', 'clk_figma', 'clk_instagram', 'clk_mail', 'clk_whatsapp', 'clk_call', 'clk_mh', 'clk_sr', 'clk_bd', 'clk_oe'])
         && request.resource.data.get('views', 0) <= 1
         && request.resource.data.get('count', 0) <= 1
         && request.resource.data.get('ratingCount', 0) <= 1
@@ -25,7 +25,7 @@ service cloud.firestore {
         && request.resource.data.get('clk_linkedin', 0) <= 1 && request.resource.data.get('clk_figma', 0) <= 1
         && request.resource.data.get('clk_instagram', 0) <= 1 && request.resource.data.get('clk_mail', 0) <= 1
         && request.resource.data.get('clk_whatsapp', 0) <= 1 && request.resource.data.get('clk_call', 0) <= 1
-        && request.resource.data.get('clk_sr', 0) <= 1 && request.resource.data.get('clk_bd', 0) <= 1 && request.resource.data.get('clk_oe', 0) <= 1
+        && request.resource.data.get('clk_mh', 0) <= 1 && request.resource.data.get('clk_sr', 0) <= 1 && request.resource.data.get('clk_bd', 0) <= 1 && request.resource.data.get('clk_oe', 0) <= 1
       );
 
       allow update: if isOwner() || isOneView() || isOneSignature() || isOneDownload() || isOneClick();
@@ -56,7 +56,7 @@ service cloud.firestore {
         let ks = request.resource.data.diff(resource.data).affectedKeys();
         let k = ks.toList()[0];
         return ks.size() == 1
-          && ks.hasOnly(['clk_linkedin', 'clk_figma', 'clk_instagram', 'clk_mail', 'clk_whatsapp', 'clk_call', 'clk_sr', 'clk_bd', 'clk_oe'])
+          && ks.hasOnly(['clk_linkedin', 'clk_figma', 'clk_instagram', 'clk_mail', 'clk_whatsapp', 'clk_call', 'clk_mh', 'clk_sr', 'clk_bd', 'clk_oe'])
           && request.resource.data[k] == resource.data.get(k, 0) + 1;
       }
     }
