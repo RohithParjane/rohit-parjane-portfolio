@@ -2744,12 +2744,13 @@ function orbit(){var hs=document.getElementById('hsm'),st=document.getElementByI
  b.classList.remove('in');var W=innerWidth,H=innerHeight,m=mob(),S=m?34:46,br=b.getBoundingClientRect(),tx=br.left+Math.min(br.width,40)/2,ty=br.top+br.height/2;
  var cx=R.left+R.width/2,rx=Math.max(m?88:120,R.width*(m?1.55:1.6)),ry=rx*.3,cy0=R.top+R.height*.44,cy1=R.top+R.height*.18;
  /* path = float-in bezier + tilted spiral ring + rise-out bezier, joined with matching direction (C1) */
- var A0=Math.PI,A1=-2*Math.PI,P=[];
+ var A0=.3*Math.PI,A1=-2*Math.PI,P=[];
  function ring(th){var u=(A0-th)/(A0-A1),cy=cy0+(cy1-cy0)*u;return[cx+rx*Math.cos(th),cy+ry*Math.sin(th),Math.sin(th)]}
  function tan(th){var a=ring(th),c=ring(th-.01),l=Math.hypot(c[0]-a[0],c[1]-a[1])||1;return[(c[0]-a[0])/l,(c[1]-a[1])/l]}
  function cub(p0,p1,p2,p3,dep,n,skip){for(var i=skip?1:0;i<=n;i++){var t=i/n,v=1-t,x=v*v*v*p0[0]+3*v*v*t*p1[0]+3*v*t*t*p2[0]+t*t*t*p3[0],y=v*v*v*p0[1]+3*v*v*t*p1[1]+3*v*t*t*p2[1]+t*t*t*p3[1];P.push([x,y,typeof dep==='function'?dep(t):dep])}}
- var rs=ring(A0),ts=tan(A0),st0=[Math.min(-50,cx-rx*3.2),Math.max(30,cy1-ry*6)],k1=Math.hypot(rs[0]-st0[0],rs[1]-st0[1])*.45;
- cub(st0,[st0[0]+k1*.9,st0[1]+k1*.15],[rs[0]-ts[0]*k1,rs[1]-ts[1]*k1],rs,function(){return .7},40,false);
+ var mb=document.querySelector('.mood>button'),mr=mb&&mb.getBoundingClientRect(),st0=mr&&mr.width?[mr.left+mr.width/2,mr.top-(m?22:30)]:[34,H-90];
+ var rs=ring(A0),ts=tan(A0),k1=Math.hypot(rs[0]-st0[0],rs[1]-st0[1])*.42;
+ cub(st0,[st0[0]+k1*.55,st0[1]-k1*.75],[rs[0]-ts[0]*k1,rs[1]-ts[1]*k1],rs,function(){return .7},40,false);
  for(var th=A0-.04;th>A1;th-=.04)P.push(ring(th));
  var re=ring(A1),te=tan(A1),k2=Math.hypot(tx-re[0],ty-re[1])*.45;P.push(re);
  cub(re,[re[0]+te[0]*k2*.8,re[1]+te[1]*k2*.8],[tx+(re[0]-tx)*.2,ty+k2*.55],[tx,ty],function(t){return t<.12?re[2]+(.7-re[2])*t/.12:.7},50,true);
@@ -2765,7 +2766,7 @@ function orbit(){var hs=document.getElementById('hsm'),st=document.getElementByI
   var tt=ms/1000+ph,sx=Math.sin(tt*2.1)*7*fl,sy=Math.sin(tt*1.3+1)*4*fl,rock=Math.sin(tt*2.6)*16*fl;
   var a=(ang+rock)*fl+(-8)*land;
   var dep=p[2],front=dep>-.05,sc=(.86+.2*Math.max(-1,Math.min(1,dep)))*(1-.45*sm(land));
-  pl.style.zIndex=front?9:1;pl.style.opacity=front?1:.8;pl.style.filter=front?'':'blur(.6px) brightness(.85)';
+  var fin=Math.min(1,ms/350);pl.style.zIndex=front?9:1;pl.style.opacity=(front?1:.8)*fin;pl.style.filter=front?'':'blur(.6px) brightness(.85)';
   pl.style.transform='translate('+(p[0]+sx-S/2).toFixed(1)+'px,'+(p[1]+sy-S*.375).toFixed(1)+'px) rotate('+(a+45).toFixed(1)+'deg) scale('+sc.toFixed(3)+')';
   if(u<1)requestAnimationFrame(fr);else{b.classList.add('in');land_();pl.animate([{opacity:1},{opacity:0}],{duration:300,fill:'forwards'});setTimeout(function(){pl.remove()},340)}}
  var land_=land;requestAnimationFrame(fr);return true}
