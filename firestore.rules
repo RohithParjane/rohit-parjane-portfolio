@@ -1,5 +1,5 @@
 rules_version = '2';
-// Security rules for Rohit's portfolio: visitor diary, ratings, views, resume downloads and the private insights page.
+// Security rules for Rohit's portfolio: visitor diary, ratings, views and the private insights page.
 // Paste into Firebase console > Firestore Database > Rules, then click Publish.
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -51,14 +51,8 @@ service cloud.firestore {
     // Anonymous visit analytics: one document per visit with section time and approximate location.
     // Visitors can only create their own visit and add time to it for a few hours; only Rohit can read.
     match /visits/{visitId} {
-      function okSec(m, k) {
-        return !(k in m) || (m[k] is int && m[k] >= 0 && m[k] <= 10800);
-      }
       function validSec(m) {
-        return m is map
-          && m.keys().hasOnly(['home', 'work', 'case1', 'case2', 'about', 'play', 'resume', 'contact'])
-          && okSec(m, 'home') && okSec(m, 'work') && okSec(m, 'case1') && okSec(m, 'case2')
-          && okSec(m, 'about') && okSec(m, 'play') && okSec(m, 'resume') && okSec(m, 'contact');
+        return m is map && m.keys().hasOnly(['home', 'work', 'case1', 'case2', 'about', 'play', 'resume', 'contact']) && (!('home' in m) || (m.home is int && m.home >= 0 && m.home <= 10800)) && (!('work' in m) || (m.work is int && m.work >= 0 && m.work <= 10800)) && (!('case1' in m) || (m.case1 is int && m.case1 >= 0 && m.case1 <= 10800)) && (!('case2' in m) || (m.case2 is int && m.case2 >= 0 && m.case2 <= 10800)) && (!('about' in m) || (m.about is int && m.about >= 0 && m.about <= 10800)) && (!('play' in m) || (m.play is int && m.play >= 0 && m.play <= 10800)) && (!('resume' in m) || (m.resume is int && m.resume >= 0 && m.resume <= 10800)) && (!('contact' in m) || (m.contact is int && m.contact >= 0 && m.contact <= 10800));
       }
       allow read, delete: if isOwner();
       allow create: if request.resource.data.keys().hasOnly(['at', 'country', 'region', 'city', 'dev', 'sec'])
