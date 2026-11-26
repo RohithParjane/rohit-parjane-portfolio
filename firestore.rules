@@ -10,21 +10,24 @@ service cloud.firestore {
         && request.auth.token.email_verified == true;
     }
 
-    // One summary document: total views, views per day, diary count, rating totals and resume downloads.
+    // One summary document: total views, views per day, diary count, rating totals, resume downloads and social/contact clicks.
     match /stats/main {
       allow read: if true;
 
-      // First visitor, first signature or first download creates it with starting values only.
+      // First visitor, signature, download or click creates it with starting values only.
       allow create: if isOwner() || (
-        request.resource.data.keys().hasOnly(['views', 'days', 'count', 'ratingCount', 'ratingSum', 'downloads', 'dlDays'])
+        request.resource.data.keys().hasOnly(['views', 'days', 'count', 'ratingCount', 'ratingSum', 'downloads', 'dlDays', 'clk_linkedin', 'clk_figma', 'clk_instagram', 'clk_mail', 'clk_whatsapp', 'clk_call'])
         && request.resource.data.get('views', 0) <= 1
         && request.resource.data.get('count', 0) <= 1
         && request.resource.data.get('ratingCount', 0) <= 1
         && request.resource.data.get('ratingSum', 0) <= 5
         && request.resource.data.get('downloads', 0) <= 1
+        && request.resource.data.get('clk_linkedin', 0) <= 1 && request.resource.data.get('clk_figma', 0) <= 1
+        && request.resource.data.get('clk_instagram', 0) <= 1 && request.resource.data.get('clk_mail', 0) <= 1
+        && request.resource.data.get('clk_whatsapp', 0) <= 1 && request.resource.data.get('clk_call', 0) <= 1
       );
 
-      allow update: if isOwner() || isOneView() || isOneSignature() || isOneDownload();
+      allow update: if isOwner() || isOneView() || isOneSignature() || isOneDownload() || isOneClick();
 
       // A visit may only add exactly one view.
       function isOneView() {
@@ -45,6 +48,15 @@ service cloud.firestore {
       function isOneDownload() {
         return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downloads', 'dlDays'])
           && request.resource.data.downloads == resource.data.get('downloads', 0) + 1;
+      }
+
+      // A social or contact link click may only add exactly one to a single channel.
+      function isOneClick() {
+        let ks = request.resource.data.diff(resource.data).affectedKeys();
+        let k = ks.toList()[0];
+        return ks.size() == 1
+          && ks.hasOnly(['clk_linkedin', 'clk_figma', 'clk_instagram', 'clk_mail', 'clk_whatsapp', 'clk_call'])
+          && request.resource.data[k] == resource.data.get(k, 0) + 1;
       }
     }
 
