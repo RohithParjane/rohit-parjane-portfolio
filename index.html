@@ -2551,6 +2551,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&PN.classLis
 document.addEventListener('pointerdown',function(e){if(!PN.classList.contains('on'))return;if(innerWidth<=700)return;if(PN.contains(e.target)||L.contains(e.target)||D.contains(e.target))return;close()});
 setTimeout(function(){if(!ss('lh_ping')){ss('lh_ping','1');L.classList.add('ping')}},9000);
 /* ---------- page companions ---------- */
+['about','work','case1','case2'].forEach(function(k){delete C.P[k]}); /* quiet pages: no pop-up chat */
 var dTok=0,dT=[],cur=null,muted=ss('lh_mute')==='1',seen={};try{seen=JSON.parse(ss('lh_seen')||'{}')}catch(e){}
 function mark(id){seen[id]=1;ss('lh_seen',JSON.stringify(seen))}
 function stopDock(){dTok++;dT.forEach(clearTimeout);dT=[];D.classList.remove('on');setTimeout(function(){if(!D.classList.contains('on'))D.hidden=true},450)}
