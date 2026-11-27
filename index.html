@@ -2083,7 +2083,7 @@ tr.editing td{vertical-align:top}
 #rv.in .rv-name::after{animation:rvsheen 1.4s 1.75s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes rvsheen{to{transform:translateX(120%)}}
 #rv.in .rv-name .ch{animation:rvink .95s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(.55s + var(--i)*.045s)}
-@keyframes rvink{0%{opacity:0;transform:translateY(.45em) scale(.96);filter:blur(10px);color:#f6d58b;text-shadow:0 0 24px #f6d58b}60%{opacity:1;filter:blur(0);color:#f6d58b;text-shadow:0 0 18px rgba(246,213,139,.7)}100%{opacity:1;transform:none;color:#f3efe8;text-shadow:none}}
+@keyframes rvink{0%{opacity:0;transform:translateY(.45em) scale(.96);filter:blur(10px);color:#f6d58b;text-shadow:0 0 24px #f6d58b}60%{opacity:1;filter:blur(0);color:#f6d58b;text-shadow:0 0 18px rgba(246,213,139,.7)}100%{opacity:1;transform:none;filter:none;color:#f3efe8;text-shadow:none}}
 .rv-role{margin:14px 0 0;font:400 clamp(19px,2.6vw,26px)/1.35 'Bricolage Grotesque',sans-serif;color:#d8d3ca}
 .rv-role em{font:italic 400 1.12em/1 'Instrument Serif',Georgia,serif;color:#f6d58b}
 .rv-meta{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0;padding:0;list-style:none}
@@ -2159,7 +2159,7 @@ tr.editing td{vertical-align:top}
 .rv-btn{padding:11px 15px;font-size:13px}}
 @media(prefers-reduced-motion:reduce){.rvb .rvb-s,.rv-dot{animation:none}.rv-a{filter:none;transform:none}#rv.in .rv-name .ch{animation:none}#rv.in .rv-name::after{animation:none}.rv-ln{transform:none}}
 </style>
-<style>#hl .hrv{display:flex;align-items:center;gap:18px;flex-wrap:wrap}#hl .hrvb{display:inline-flex;align-items:center;gap:9px;cursor:pointer}#hl .hrvb .rvb-s{width:14px;height:14px;color:#f6d58b;animation:rvtw 2.6s ease-in-out infinite}#hl .hsay{color:#fff;opacity:.9;font:600 14.5px/1 'Bricolage Grotesque',sans-serif;letter-spacing:.06em;text-decoration:none;text-shadow:0 1px 10px #0007;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:3px;transition:opacity .25s,border-color .25s}#hl .hsay i{font-style:normal;display:inline-block;transition:transform .25s}#hl .hsay:hover,#hl .hsay:focus-visible{opacity:1;border-color:#f6d58b;outline:none}#hl .hsay:hover i{transform:translateX(3px)}@media(max-width:700px){body #hl{bottom:calc(82px + env(safe-area-inset-bottom,0px))!important}#hl .hrv{justify-content:center;gap:14px;margin-top:16px}#hl .hrvb{display:inline-flex!important;font-size:11.5px!important}#hl .hsay{font-size:12px}}@media(prefers-reduced-motion:reduce){#hl .hrvb .rvb-s{animation:none}}</style>
+<style>#hl .hrv{display:flex;align-items:center;gap:18px;flex-wrap:wrap}#hl .hrvb:focus:not(:focus-visible){outline:none}#hl .hrvb{display:inline-flex;align-items:center;gap:9px;cursor:pointer}#hl .hrvb .rvb-s{width:14px;height:14px;color:#f6d58b;animation:rvtw 2.6s ease-in-out infinite}#hl .hsay{color:#fff;opacity:.9;font:600 14.5px/1 'Bricolage Grotesque',sans-serif;letter-spacing:.06em;text-decoration:none;text-shadow:0 1px 10px #0007;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:3px;transition:opacity .25s,border-color .25s}#hl .hsay i{font-style:normal;display:inline-block;transition:transform .25s}#hl .hsay:hover,#hl .hsay:focus-visible{opacity:1;border-color:#f6d58b;outline:none}#hl .hsay:hover i{transform:translateX(3px)}@media(max-width:700px){body #hl{bottom:calc(82px + env(safe-area-inset-bottom,0px))!important}#hl .hrv{justify-content:center;gap:14px;margin-top:16px}#hl .hrvb{display:inline-flex!important;font-size:11.5px!important}#hl .hsay{font-size:12px}}@media(prefers-reduced-motion:reduce){#hl .hrvb .rvb-s{animation:none}}</style>
 </head><body>
 <div id="cur"></div><div id="ldr" aria-label="Loading"><div class="ln">Rohit<br>Parjane</div><div class="lp"><span id="lnum">0</span><i>%</i></div><div class="lb"><b id="lbar"></b><img class="lemb" id="lemb" alt="" src="img/33c361a64091.webp"></div></div><script>(function(){var n=document.getElementById('lnum'),b=document.querySelector('#ldr .lb');if(!n||!b)return;function u(){var v=Math.max(0,Math.min(100,parseInt(n.textContent,10)||0));b.style.setProperty('--lp',v+'%')}new MutationObserver(u).observe(n,{childList:true,characterData:true,subtree:true});u()})();</script>
 <nav><b>RP<span class="serif">.</span></b><a class="h" href="#my-story">My Story</a><a class="h" href="#work">Work</a><a class="h" href="#path">Path</a><a class="h" href="#playground">Playground</a><a href="#contact">Contact</a></nav>
@@ -3145,7 +3145,7 @@ function count(b){if(!b||RM||b.dataset.done)return;b.dataset.done=1;var n=parseF
 function reset(){[].forEach.call(V.querySelectorAll('.vis'),function(e){e.classList.remove('vis')});[].forEach.call(V.querySelectorAll('.rv-st b'),function(b){delete b.dataset.done;b.textContent=b.dataset.n+(b.dataset.s||'')})}
 function far(x,y){var W=innerWidth,H=innerHeight;return Math.ceil(Math.max(Math.hypot(x,y),Math.hypot(W-x,y),Math.hypot(x,H-y),Math.hypot(W-x,H-y)))+4}
 function from(){var r=B.getBoundingClientRect();if(r.width)return{x:r.left+r.width/2,y:r.top+r.height/2};return{x:innerWidth/2,y:innerHeight*.42}}
-function open(o){if(isOpen||busy)return;isOpen=true;busy=true;origin=o||from();var x=origin.x,y=origin.y,R=far(x,y);
+function open(o,fromPop){if(isOpen||busy)return;isOpen=true;busy=true;if(!fromPop)try{history.pushState({rv:1},'')}catch(_){}origin=o||from();var x=origin.x,y=origin.y,R=far(x,y);
  reset();SC.scrollTop=0;V.hidden=false;V.classList.remove('out','in');document.documentElement.classList.add('rv-lock');B.setAttribute('aria-expanded','true');B.classList.remove('show');
  if(window.clarity)try{clarity('event','recruiter_view')}catch(_){}
  if(RM||!V.animate){V.style.opacity=0;V.animate&&V.animate([{opacity:0},{opacity:1}],{duration:250,fill:'forwards'});V.style.opacity='';V.classList.add('in');reveal();busy=false;V.querySelector('.rv-back').focus({preventScroll:true});return}
@@ -3153,10 +3153,10 @@ function open(o){if(isOpen||busy)return;isOpen=true;busy=true;origin=o||from();v
  var a=V.animate([{clipPath:'circle(0px at '+x+'px '+y+'px)'},{clipPath:'circle('+R+'px at '+x+'px '+y+'px)'}],{duration:1150,easing:'cubic-bezier(.65,0,.25,1)'});
  requestAnimationFrame(function(){V.classList.add('in');reveal()});
  a.onfinish=function(){busy=false;V.querySelector('.rv-back').focus({preventScroll:true})}}
-var ret=null,retHome=false;function close(go){if(!isOpen||busy)return;busy=true;if(io)io.disconnect();ret=go||null;if(!go&&retHome){retHome=false;if(location.hash&&location.hash!=='#')location.hash=''}else if(go)retHome=false;
- if(go){location.hash=go}
+var ret=null,pendO=null,kb=false;function close(go,fromPop){if(!isOpen||busy)return;if(!go&&!fromPop&&history.state&&history.state.rv){history.back();return}busy=true;if(io)io.disconnect();ret=go||null;
+ /* the site router handles the #case link itself (one history entry) */
  setTimeout(function(){var o=go?{x:innerWidth/2,y:innerHeight/2}:(function(){var r=B.getBoundingClientRect();place();r=B.getBoundingClientRect();return r.width?{x:r.left+r.width/2,y:r.top+r.height/2}:origin})(),x=o.x,y=o.y,R=far(x,y);
-  function done(){V.hidden=true;V.classList.remove('in','out');document.documentElement.classList.remove('rv-lock');isOpen=false;busy=false;B.setAttribute('aria-expanded','false');place();if(!go)try{B.focus({preventScroll:true})}catch(_){}}
+  function done(){V.hidden=true;V.classList.remove('in','out');document.documentElement.classList.remove('rv-lock');isOpen=false;busy=false;B.setAttribute('aria-expanded','false');place();if(!go&&kb)try{B.focus({preventScroll:true})}catch(_){}kb=false}
   if(RM||!V.animate){done();return}
   V.classList.add('out');
   setTimeout(function(){ring(x,y,R,900,true);var a=V.animate([{clipPath:'circle('+R+'px at '+x+'px '+y+'px)'},{clipPath:'circle(0px at '+x+'px '+y+'px)'}],{duration:900,easing:'cubic-bezier(.65,0,.35,1)',fill:'forwards'});a.onfinish=function(){done();a.cancel();burst(x,y,46,true)}},160)},go?60:0)}
@@ -3166,11 +3166,13 @@ V.addEventListener('click',function(e){var t=e.target.closest('[data-rv],[data-g
  if(t.dataset.rv==='dl'){var d=document.getElementById('dl1');if(d)d.click();return}
  if(t.dataset.go){e.preventDefault();close(t.dataset.go);return}
  if(t.dataset.ch&&t.dataset.ch!=='figma'){try{window.RP_STORE&&RP_STORE.click&&RP_STORE.click(t.dataset.ch)}catch(_){}}});
-document.addEventListener('keydown',function(e){if(!isOpen)return;if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();return}
+document.addEventListener('keydown',function(e){if(!isOpen)return;if(e.key==='Escape'){e.preventDefault();e.stopPropagation();kb=true;close();return}
  if(e.key==='Tab'){var f=[].slice.call(V.querySelectorAll('a[href],button')).filter(function(x){return x.offsetParent!==null});if(!f.length)return;var a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}}},true);
 window.__recruiter={open:open,close:close};
 /* came from the recruiter view? the case study's back button returns there */
-document.addEventListener('click',function(e){if(!ret||isOpen)return;var b=e.target.closest&&e.target.closest('.back');if(!b)return;var pg=document.querySelector('.pg.on');if(!pg||pg.id!=='p-'+ret){ret=null;return}e.preventDefault();e.stopImmediatePropagation();retHome=true;var r=b.getBoundingClientRect();open({x:r.left+r.width/2,y:r.top+r.height/2})},true);
+document.addEventListener('click',function(e){if(!ret||isOpen)return;var b=e.target.closest&&e.target.closest('.back');if(!b)return;var pg=document.querySelector('.pg.on');if(!pg||pg.id!=='p-'+ret){ret=null;return}e.preventDefault();e.stopImmediatePropagation();var r=b.getBoundingClientRect();pendO={x:r.left+r.width/2,y:r.top+r.height/2};history.back()},true);
+/* browser / phone back: case study -> recruiter view -> home */
+addEventListener('popstate',function(e){var st=e.state&&e.state.rv;if(st&&!isOpen){var o=pendO||{x:innerWidth/2,y:innerHeight*.45};pendO=null;setTimeout(function(){open(o,true)},40)}else if(!st&&isOpen){close(null,true)}});
 addEventListener('hashchange',function(){if(ret&&location.hash.replace('#','')!==ret)ret=null});
 /* share link: rohitparjane…/?recruiter opens straight into this view */
 if(/[?&]recruiter\b/.test(location.search)||location.hash==='#recruiter'){if(location.hash==='#recruiter')history.replaceState(null,'',location.pathname+location.search);setTimeout(function(){open({x:innerWidth/2,y:innerHeight*.45})},350)}
